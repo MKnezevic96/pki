@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create root</title>
+
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <!------ Include the above in your HEAD tag ---------->
+
+    <script src="js/createRoot.js"></script>
+    <link rel="stylesheet" href="css/createCert.css">
+    <!------ Include the above in your HEAD tag ---------->
+    <link href="https://fonts.googleapis.com/css?family=Libre+Franklin" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
+
+    <script
+            src="https://code.jquery.com/jquery-3.4.1.js"
+            integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+            crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+
+
+</head>
+<body>
+
+
+
+<main>
+
+    <!--MDB Forms-->
+    <div class="container mt-4">
+
+        <div class="text-center darken-grey-text mb-4">
+        </div>
+            <!-- Grid column -->
+            <div class="col-md-6 mb-4">
+                <div class="card ">
+                    <div class="card-body">
+                        <h3 class="text-center default-text py-3"><i class="fa fa-user"></i> Subject Data:</h3>
+                        <!--Body-->
+                        <div class="md-form">
+                            <input type="text" id="commonName" class="form-control">
+                            <label for="commonName">Common Name</label>
+                        </div>
+                        <div class="md-form">
+                            <input type="text" id="countryName" class="form-control">
+                            <label for="countryName">CountryName</label>
+                        </div>
+                        <div class="md-form">
+                            <input type="text" id="stateName" class="form-control">
+                            <label for="stateName">State name</label>
+                        </div>
+                        <div class="md-form">
+                            <input type="text" id="localityName" class="form-control">
+                            <label for="localityName">Locality Name</label>
+                        </div>
+                        <div class="md-form">
+                            <input type="text" id="organisationName" class="form-control">
+                            <label for="organisationName">Organisation name</label>
+                        </div>
+                        <div class="md-form">
+                            <input type="text" id="organisationUnitName" class="form-control">
+                            <label for="organisationUnitName">Organisation unit name</label>
+                        </div>
+                        <div class="md-form">
+                            <input type="text" id="email" class="form-control">
+                            <label for="email">Email</label>
+                        </div>
+                        <div class="md-form">
+                            <div class="md-form">
+                                <input type="text" id="alias" class="form-control">
+                                <label for="alias">Alias</label>
+                            </div>
+                            <div class="md-form">
+                                <i class="fa fa-lock prefix grey-text"></i>
+                                <input type="password" id="keyPassword" class="form-control">
+                                <label for="keyPassword">Key Password</label>
+                            </div>
+                            <div class="md-form">
+                                <i class="fa fa-lock prefix grey-text"></i>
+                                <input type="password" id="keyStorePassword" class="form-control">
+                                <label for="keyStorePassword">KeyStore Password</label>
+                            </div>
+                                <div class="text-center">
+                                    <button class="btn btn-default waves-effect waves-light" id="btnCreate">Create and sign</button>
+                                </div>
+                            <div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Grid column -->
+                </div>
+
+            </div>
+            <!-- Grid row -->
+
+
+        </div>
+        <!-- Grid row -->
+
+        <hr class="my-4">
+
+
+</main>
+
+<!-- MDB core JavaScript -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.4.1/js/mdb.min.js"></script>
+
+
+</body>
+</html>
