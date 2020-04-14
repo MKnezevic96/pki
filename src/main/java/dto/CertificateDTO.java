@@ -10,8 +10,8 @@ public class CertificateDTO {
     private String alias;
     private String keyPassword;
     private String keyStorePassword;
-    private Date notBefore;
-    private Date notAfter;
+    private String notBefore;
+    private String notAfter;
     private boolean basicConstrains;
     private ExtendedKeyUsageDTO extendedKeyUsageDTO;
     private KeyUsageDTO keyUsageDTO;
@@ -26,7 +26,7 @@ public class CertificateDTO {
     }
 
     public CertificateDTO(String serialNumber, DataDTO issuerData, DataDTO subjectData, String alias, String keyPassword,
-                          String keyStorePassword, Date notBefore, Date notAfter, boolean basicConstrains,
+                          String keyStorePassword, String notBefore, String notAfter, boolean basicConstrains,
                           ExtendedKeyUsageDTO extendedKeyUsageDTO, KeyUsageDTO keyUsageDTO, boolean authorityKeyIdentifier, boolean subjectKeyIdentifier,
                           String issuerAlias) {
         this.serialNumber = serialNumber;
@@ -125,19 +125,19 @@ public class CertificateDTO {
         this.alias = alias;
     }
 
-    public Date getNotBefore() {
+    public String getNotBefore() {
         return notBefore;
     }
 
-    public void setNotBefore(Date notBefore) {
+    public void setNotBefore(String notBefore) {
         this.notBefore = notBefore;
     }
 
-    public Date getNotAfter() {
+    public String getNotAfter() {
         return notAfter;
     }
 
-    public void setNotAfter(Date notAfter) {
+    public void setNotAfter(String notAfter) {
         this.notAfter = notAfter;
     }
 

@@ -100,7 +100,8 @@ window.onload = function () {
                                                     "surname":"", "uid":"", "serialNumber":"","email":email}
 
                     let certDto = JSON.stringify({"issuerData":issuerDataDTO, "subjectData":subjectDataDTO, "keyStorePassword":keyStorePassword, "keyPassword": keyPassword,
-                                                    "basicConstrains":isCA, "extendedKeyUsageDTO":extendedKeyUsageDTO, "keyUsageDTO":keyUsageDTO, "alias":alias, "issuerAlias":issuerAlias})
+                                                    "basicConstrains":isCA, "extendedKeyUsageDTO":extendedKeyUsageDTO, "keyUsageDTO":keyUsageDTO, "alias":alias, "issuerAlias":issuerAlias,
+                                                    "notAfter": issuerData.notAfter})
 
 
                     console.log(certDto)

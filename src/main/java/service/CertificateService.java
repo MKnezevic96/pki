@@ -49,18 +49,19 @@ public class CertificateService {
     @Autowired
     private KeyStoreService keyStoreService;
 
+    @Autowired
+    private ValidationService validationService;
+
 
     public void generateCertificate(CertificateDTO dto) {
         try {
             JcaContentSignerBuilder builder = new JcaContentSignerBuilder("SHA256withECDSA");
             builder = builder.setProvider("BC");
 
-            //adding provider
             addBouncyCastleAsSecurityProvider();
 
-            KeyPair keyPairIssuer = generateKeyPair();
             IssuerData issuerData = generateIssuerData(dto);
-            SubjectData subjectData = generateSubjectData(dto.getSubjectData());
+            SubjectData subjectData = generateSubjectData(dto);
 
             ContentSigner contentSigner = builder.build(issuerData.getPrivateKey());
 
@@ -70,7 +71,6 @@ public class CertificateService {
                     subjectData.getNotAfter(),
                     subjectData.getX500name(),
                     subjectData.getPublicKey());
-
 
 
             if(dto.getKeyUsageDTO().isKeyUsage()){
@@ -99,9 +99,8 @@ public class CertificateService {
                     new AuthorityKeyIdentifier(issuerData.getPublicKey().getEncoded()));
 
 
-            certGen.addExtension(Extension.subjectKeyIdentifier, true,
+            certGen.addExtension(Extension.subjectKeyIdentifier, false,
                     new SubjectKeyIdentifier(subjectData.getPublicKey().getEncoded()));
-
 
 
             //TODO proveriti za ovu ekstenziju
@@ -112,14 +111,16 @@ public class CertificateService {
 
             X509CertificateHolder certHolder = certGen.build(contentSigner);
 
-
             JcaX509CertificateConverter certConverter = new JcaX509CertificateConverter();
             certConverter = certConverter.setProvider("BC");
 
             X509Certificate cert = certConverter.getCertificate(certHolder);
-            System.out.println("-------------------------------------------"+cert+"-------------------------------");
-            keyStoreService.saveCertificate(dto.getKeyPassword(), dto.getAlias(),  dto.getKeyStorePassword(), keyPairIssuer.getPrivate(), cert);
 
+            Certificate[] chain = keyStoreService.getCertificateChain(dto.getKeyStorePassword(), dto.getIssuerAlias());
+            if(validationService.validateCertificateChain(chain)){
+                keyStoreService.saveCertificate(dto.getKeyPassword(), dto.getAlias(),  dto.getKeyStorePassword(), subjectData.getPrivateKey(), cert);
+                System.out.println("-------------------------------------------"+cert+"-------------------------------");
+            }
 
         } catch (CertificateEncodingException e) {
             e.printStackTrace();
@@ -164,16 +165,6 @@ public class CertificateService {
 
 
     private IssuerData generateIssuerData(CertificateDTO dto) throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, NoSuchProviderException, IOException {
-        X500NameBuilder builder = new X500NameBuilder(BCStyle.INSTANCE);
-        builder.addRDN(BCStyle.CN, dto.getIssuerData().getCommonName());
-//        builder.addRDN(BCStyle.SURNAME, data.getSurname());
-//        builder.addRDN(BCStyle.GIVENNAME, data.getGivenName());
-        builder.addRDN(BCStyle.O, dto.getIssuerData().getOrganisationName());
-        builder.addRDN(BCStyle.OU, dto.getIssuerData().getOrganisationUnitName());
-        builder.addRDN(BCStyle.C, dto.getIssuerData().getCountryName());
-        builder.addRDN(BCStyle.E, dto.getIssuerData().getEmail());
-        builder.addRDN(BCStyle.L, dto.getIssuerData().getLocalityName());
-//        builder.addRDN(BCStyle.UID, data.getUid());
 
         IssuerData issuerData = keyStoreService.readIssuerDataFromStore(dto.getIssuerAlias(), dto.getKeyStorePassword(), dto.getKeyPassword());
 
@@ -181,20 +172,11 @@ public class CertificateService {
     }
 
     //TODO podeliti na user vs system
-    private SubjectData generateSubjectData(DataDTO data) {
+    private SubjectData generateSubjectData(CertificateDTO dto) {
         try {
+
+            DataDTO data = dto.getSubjectData();
             KeyPair keyPairSubject = generateKeyPair();
-
-           // SimpleDateFormat iso8601Formater = new SimpleDateFormat("yyyy-MM-dd");
-
-            SimpleDateFormat iso8601Formater = new SimpleDateFormat("EE MMM dd HH:mm:ss z yyyy",
-                    Locale.ENGLISH);
-
-            Date startDate1 =  new Date(System.currentTimeMillis());
-            Date endDate1 = new Date(System.currentTimeMillis() + 20 * 365 * 24 * 60 * 60 * 1000);
-
-            Date startDate = iso8601Formater.parse(startDate1.toString());
-            Date endDate = iso8601Formater.parse(endDate1.toString());
 
             byte[] serialNumber = getSerialNumber();
 
@@ -209,8 +191,29 @@ public class CertificateService {
             builder.addRDN(BCStyle.L, data.getLocalityName());
 //            builder.addRDN(BCStyle.UID, data.getUid());
 
+            SimpleDateFormat sdf = new SimpleDateFormat("EE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
+            Calendar cal = Calendar.getInstance();
 
-            return new SubjectData(keyPairSubject.getPublic(), builder.build(), serialNumber, startDate, endDate);
+            Date notBefore;
+            Date notAfter;
+
+            if(!dto.getSubjectData().getCommonName().equals(dto.getIssuerData().getCommonName())){
+                cal.add(Calendar.HOUR, -8);
+                Date eightHoursEarlier = cal.getTime();
+                notBefore = sdf.parse(eightHoursEarlier.toString());
+                notAfter = sdf.parse(dto.getNotAfter());
+            } else {
+                cal.add(Calendar.HOUR, -8);
+                Date eightHoursEarlier = cal.getTime();
+                notBefore = sdf.parse(eightHoursEarlier.toString());
+
+                cal.add(Calendar.YEAR, 2);
+                Date twoYearsLater = cal.getTime();
+                notAfter = sdf.parse(twoYearsLater.toString());
+            }
+
+            return new SubjectData(keyPairSubject.getPublic(), builder.build(), serialNumber, notBefore, notAfter, keyPairSubject.getPrivate());
+
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -237,23 +240,13 @@ public class CertificateService {
 
     //TODO proveriti duzinu trajanja
     public void generateSelfSignedX509Certificate(CertificateDTO dto) throws CertificateException, IllegalStateException,
-            OperatorCreationException, NoSuchAlgorithmException, KeyStoreException, NoSuchProviderException, IOException {
-        //adding provider
+            OperatorCreationException, NoSuchAlgorithmException, KeyStoreException, NoSuchProviderException, IOException, ParseException {
+
         addBouncyCastleAsSecurityProvider();
 
-        // generate a key pair
-        KeyPair keyPair = generateKeyPair();
-        IssuerData issuerData = generateIssuerDataRoot(keyPair.getPrivate(), keyPair.getPublic(), dto.getIssuerData());
-        SubjectData subjectData = generateSubjectData(dto.getSubjectData());
+        SubjectData subjectData = generateSubjectData(dto);
+        IssuerData issuerData = generateIssuerDataRoot(subjectData.getPrivateKey(), subjectData.getPublicKey(), dto.getIssuerData());
 
-        //2 years validation
-        Calendar cal = Calendar.getInstance();
-        Date notBefore = cal.getTime();
-        cal.add(Calendar.YEAR, 2);
-        Date notAfter = cal.getTime();
-
-
-        // build a certificate generator
         JcaContentSignerBuilder builder = new JcaContentSignerBuilder("SHA256withECDSA");
         builder = builder.setProvider("BC");
 
@@ -261,12 +254,12 @@ public class CertificateService {
 
         X509v3CertificateBuilder certGen = new JcaX509v3CertificateBuilder(issuerData.getX500name(),
                 new BigInteger(subjectData.getSerialNumber()),
-                notBefore,
-                notAfter,
+                subjectData.getNotBefore(),
+                subjectData.getNotAfter(),
                 subjectData.getX500name(),
                 subjectData.getPublicKey());
 
-            certGen.addExtension(Extension.basicConstraints, true, new BasicConstraints(true));
+        certGen.addExtension(Extension.basicConstraints, true, new BasicConstraints(true));
 
 
 
@@ -282,7 +275,8 @@ public class CertificateService {
         certConverter = certConverter.setProvider("BC");
         X509Certificate cert = certConverter.getCertificate(certHolder);
 
-        keyStoreService.saveCertificate(dto.getKeyPassword(), dto.getAlias(),  dto.getKeyStorePassword(), keyPair.getPrivate(), cert);
+
+        keyStoreService.saveCertificate(dto.getKeyPassword(), dto.getAlias(),  dto.getKeyStorePassword(), subjectData.getPrivateKey(), cert);
 
     }
 
@@ -291,38 +285,35 @@ public class CertificateService {
     }
 
 
-    // certificate reader from file, da li da ga smesta u listu ?
-
-    public static final String BASE64_ENC_CERT_FILE = "./data/sertifikati.cer";
-    public static final String BIN_ENC_CERT_FILE = "./data/sertifikatibin.cer";
-
-    private void readFromBase64EncFile() {
-        try {
-            FileInputStream fis = new FileInputStream(BASE64_ENC_CERT_FILE);
-            BufferedInputStream bis = new BufferedInputStream(fis);
-
-            CertificateFactory cf = CertificateFactory.getInstance("X.509");
-
-            //Cita sertifikat po sertifikat
-            //Svaki certifikat je izmedju
-            //-----BEGIN CERTIFICATE-----,
-            //i
-            //-----END CERTIFICATE-----.
-            while (bis.available() > 0) {
-                Certificate cert = cf.generateCertificate(bis);
-                System.out.println(cert.toString());
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (CertificateException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-
+//    // certificate reader from file, da li da ga smesta u listu ?
+//
+//    public static final String BASE64_ENC_CERT_FILE = "./data/sertifikati.cer";
+//    public static final String BIN_ENC_CERT_FILE = "./data/sertifikatibin.cer";
+//
+//    private void readFromBase64EncFile() {
+//        try {
+//            FileInputStream fis = new FileInputStream(BASE64_ENC_CERT_FILE);
+//            BufferedInputStream bis = new BufferedInputStream(fis);
+//
+//            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+//
+//            //Cita sertifikat po sertifikat
+//            //Svaki certifikat je izmedju
+//            //-----BEGIN CERTIFICATE-----,
+//            //i
+//            //-----END CERTIFICATE-----.
+//            while (bis.available() > 0) {
+//                Certificate cert = cf.generateCertificate(bis);
+//                System.out.println(cert.toString());
+//            }
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (CertificateException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 
     private static ExtendedKeyUsage createExtendedUsage(Collection<ASN1ObjectIdentifier> usages) {

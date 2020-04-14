@@ -17,12 +17,13 @@ public class DataDTO {
     private String surname;
     private String uid;
     private String serialNumber;
+    private String notAfter;
 
     public DataDTO(){
 
     }
 
-    public DataDTO(String countryName, String stateName, String localityName, String organisationName, String organisationUnitName, String commonName, String email, String givenName, String surname, String uid, String serialNumber) {
+    public DataDTO(String notAfter, String countryName, String stateName, String localityName, String organisationName, String organisationUnitName, String commonName, String email, String givenName, String surname, String uid, String serialNumber) {
         this.countryName = countryName;
         this.stateName = stateName;
         this.localityName = localityName;
@@ -34,6 +35,7 @@ public class DataDTO {
         this.surname = surname;
         this.uid = uid;
         this.serialNumber = serialNumber;
+        this.notAfter = notAfter;
     }
 
     public DataDTO(DataDTO data){
@@ -48,6 +50,7 @@ public class DataDTO {
         this.surname = data.getSurname();
         this.uid = data.getUid();
         this.serialNumber = data.getSerialNumber();
+        this.notAfter = data.getNotAfter();
     }
 
 
@@ -59,6 +62,7 @@ public class DataDTO {
         this.stateName = issuerData.getX500name().getRDNs(BCStyle.SN).toString();
         this.organisationName =  issuerData.getX500name().getRDNs(BCStyle.O).toString();
         this.organisationUnitName =  issuerData.getX500name().getRDNs(BCStyle.OU).toString();
+        this.notAfter = issuerData.getNotAfter().toString();
     }
 
     public String getCountryName() {
@@ -147,5 +151,13 @@ public class DataDTO {
 
     public void setSerialNumber(String serialNumber) {
         this.serialNumber = serialNumber;
+    }
+
+    public String getNotAfter() {
+        return notAfter;
+    }
+
+    public void setNotAfter(String notAfter) {
+        this.notAfter = notAfter;
     }
 }
