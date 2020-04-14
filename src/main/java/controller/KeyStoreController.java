@@ -1,5 +1,6 @@
 package controller;
 
+import dto.CertificateDTO;
 import dto.DataDTO;
 import model.IssuerData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,12 @@ import org.springframework.web.bind.annotation.*;
 import service.KeyStoreService;
 
 import javax.websocket.server.PathParam;
+import java.io.IOException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -42,6 +49,37 @@ public class KeyStoreController {
             e.printStackTrace();
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+
+    @GetMapping(value="/getCerts/{keyStorePassword}")
+    public ResponseEntity<List<CertificateDTO>> getAllCertificates(@PathVariable("keyStorePassword") String keyStorePassword){
+
+        try {
+            List<CertificateDTO> root = keyStoreService.getAllCertificates("root", keyStorePassword);
+            List<CertificateDTO> intermediate = keyStoreService.getAllCertificates("intermediate", keyStorePassword);
+            List<CertificateDTO> endentity = keyStoreService.getAllCertificates("endentity", keyStorePassword);
+
+            List<CertificateDTO> all = new ArrayList<>();
+            if(root != null)all.addAll(root);
+            if(intermediate != null)all.addAll(intermediate);
+            if(endentity != null)all.addAll(endentity);
+
+            if(all.isEmpty()){
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+            return new ResponseEntity<>(all, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+
+    @PostMapping(value="/download")
+    public ResponseEntity<CertificateDTO> downloadCertificate(@RequestBody CertificateDTO dto) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
+        keyStoreService.downloadCertificate(dto);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
