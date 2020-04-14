@@ -1,5 +1,6 @@
 package model;
 
+import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Date;
 
@@ -8,6 +9,7 @@ import org.bouncycastle.asn1.x500.X500Name;
 public class SubjectData {
 
     private PublicKey publicKey;
+    private PrivateKey privateKey;
     private X500Name x500name;
     private byte[] serialNumber;
     private Date notBefore;
@@ -17,12 +19,13 @@ public class SubjectData {
 
     }
 
-    public SubjectData(PublicKey publicKey, X500Name x500name, byte[] serialNumber, Date notBefore, Date notAfter) {
+    public SubjectData(PublicKey publicKey, X500Name x500name, byte[] serialNumber, Date notBefore, Date notAfter, PrivateKey privateKey) {
         this.publicKey = publicKey;
         this.x500name = x500name;
         this.serialNumber = serialNumber;
         this.notBefore = notBefore;
         this.notAfter = notAfter;
+        this.privateKey = privateKey;
     }
 
     public X500Name getX500name() {
@@ -63,5 +66,13 @@ public class SubjectData {
 
     public void setNotAfter(Date notAfter) {
         this.notAfter = notAfter;
+    }
+
+    public PrivateKey getPrivateKey() {
+        return privateKey;
+    }
+
+    public void setPrivateKey(PrivateKey privateKey) {
+        this.privateKey = privateKey;
     }
 }

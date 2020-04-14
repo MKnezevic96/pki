@@ -88,9 +88,9 @@ public class KeyStoreService {
             keyStore.load(in, keyStorePasswordArray);
 
             Certificate cert = keyStore.getCertificate(alias);
-             PrivateKey privKey;
-             X500Name issuerName;
-             PublicKey pubKey;
+            PrivateKey privKey;
+            X500Name issuerName;
+            PublicKey pubKey;
 
             if(cert == null){ //ako se ne nalazi u root-u, da potrazi u intermediate
                 keyStorePath = "certificates/intermediate.pfx";
@@ -112,7 +112,7 @@ public class KeyStoreService {
 
             System.out.println(keyStore.getCertificateChain(alias).length + "---CHAINNNNNNNNNNNN");
 
-            IssuerData issuerData = new IssuerData(issuerName, privKey, pubKey);
+            IssuerData issuerData = new IssuerData(issuerName, privKey, pubKey, ((X509Certificate) cert).getNotAfter() );
             DataDTO dto = new DataDTO(issuerData);
             return dto;
         } catch (KeyStoreException e) {
@@ -201,7 +201,7 @@ public class KeyStoreService {
         return null;
     }
 
-//TODO namestiti putanju
+    //TODO namestiti putanju
     public List<String> getAllCertAliasesFromKeyStore(String type, String keyStorePassword)
             throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
         String keyStorePath = "certificates/root.pfx";
@@ -252,6 +252,34 @@ public class KeyStoreService {
 
 
 
+    public Certificate[] getCertificateChain(String keyStorePassword, String alias)
+            throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
+        String keyStorePath = "certificates/root.pfx";
+        char[] keyStorePasswordArray = keyStorePassword.toCharArray();
+
+        KeyStore keyStore = KeyStore.getInstance("PKCS12");
+        try {
+            keyStore.load(new FileInputStream(keyStorePath), keyStorePasswordArray);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        Certificate[] chain = keyStore.getCertificateChain(alias);
+
+        if(chain == null ){
+            keyStorePath = "certificates/intermediate.pfx";
+
+            try {
+                keyStore.load(new FileInputStream(keyStorePath), keyStorePasswordArray);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+
+            chain = keyStore.getCertificateChain(alias);
+        }
+
+        return chain;
+    }
 
 
 }
