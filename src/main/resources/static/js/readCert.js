@@ -1,34 +1,93 @@
 window.onload = function () {
 
+    $('#certs').hide()
 
+    $('#btnConfirm').click(function(e){
+    		e.preventDefault()
+
+            let keyStorePassword = $('#keyStorePassword').val()
+            $('#passwordDiv').hide()
+
+            $.ajax({
+        		type: 'GET',
+        		url: 'api/keyStore/getCerts/' + keyStorePassword,
+        		contentType: "application/json",
+        		complete: function(data)
+        		{
+        			certs = data.responseJSON
+
+                  if(data.status == "200")
+                   {
+                        $('#certs tbody').html('');
+                        for(let cert of certs)
+                        {
+                            addCertTr(cert, keyStorePassword);
+                        }
+                        $('#certs').show()
+                   }
+                   else {
+                        alert('Trenutno nema postojecih sertifikata')
+                   }
+                           		}
+
+        	})
+
+    })
 
 }
 
 
 
 
-function addCertTr(certs)
+function addCertTr(cert, keyStorePassword)
 {
-	let tr=$('<tr></tr>');
-	let tdAlias=$('<td>'+certs.alias +'</td>');
-	let tdSubjectCN=$('<td>'+racuni.subjectData.commonName +'</td>');
-	let tdIssuerCN=$('<td>'+certs.issuerData.commonName +'</td>');
-    let tdDownload = $('<td>' + '<a href="#">Download</a>' + '</td>');
-    let tdRevoke = $('<td>' + '<a href="#">Revoke</a>' + '</td>');
+	let tr=$('<tr></tr>')
+	let tdAlias=$('<td>'+cert.alias +'</td>')
+	let tdSubjectCN=$('<td>'+cert.subjectData.commonName +'</td>')
+	let tdIssuerCN=$('<td>'+cert.issuerData.commonName +'</td>')
+	let tdType=$('<td>'+ cert.type + '</td>')
+	let tdStatus=$('<td>'+'</td>')
+    let tdDownload = $('<td><button class="btn btn-default waves-effect waves-light" id="btnDownload">Download</button></td>')
+    let tdRevoke = $('<td><button class="btn btn-default waves-effect waves-light" id="btnRevoke">Revoke</button></td>')
 
 
-	let tdObrisi = $('<td>' + '<a href="#">Obrisi</a>' + '</td>');
-	tdObrisi.click(clickBrisi(racuni.brojRacuna));
+	tdDownload.click(download(cert, keyStorePassword))
+	//tdRevoke.click(revoke(cert))
 
-	let tdAkDe = $('<td>' + '<a href="#">'+tipic+'</a>' + '</td>');
-	tdAkDe.click(clickAD(racuni.brojRacuna));
 
-	tr.append(tdBroj).append(tdTip).append(tdRaspolozivo).append(tdRezervisano).append(tdUkupno).append(tdOnline).append(tdAktivan).append(tdObrisi).append(tdAkDe);
-	$('#tabelaracuna tbody').append(tr); //prvo smo napravili red, i onda ga kacimo na tbody
+	tr.append(tdAlias).append(tdSubjectCN).append(tdIssuerCN).append(tdType).append(tdStatus).append(tdDownload).append(tdRevoke)
+	$('#certs tbody').append(tr);
 
-	if(racuni.aktivan===1)
-	{
-		dodajSelect(racuni);
-	}
+}
 
+function download(cert, keyStorePassword){
+
+    return function(){
+        let issuerDataDTO = {"commonName":cert.issuerData.commonName}
+        let subjectDataDTO = {"commonName":cert.subjectData.commonName}
+        let certDto = JSON.stringify({"issuerData":issuerDataDTO, "subjectData":subjectDataDTO, "keyStorePassword":keyStorePassword,
+                                      "type":cert.type, "alias":cert.alias})
+
+    		console.log(certDto)
+    		$.ajax({
+    			type: 'POST',
+    			url:'/api/keyStore/download',
+    			data: certDto,
+    			dataType : "json",
+    			contentType : "application/json; charset=utf-8",
+    			complete: function(data)
+                    {
+                         console.log(data.status)
+
+                          if(data.status == "200")
+                           {
+                                alert('hoce')
+                           }
+                           else {
+                                alert('nece')
+                           }
+                    }
+
+    		})
+    }
 }
