@@ -53,7 +53,7 @@ public class ValidationService {
     }
 
 
-    private boolean verifySignature(Certificate cert, PublicKey publicKey){ //pk od issuera
+    private boolean verifySignature(Certificate cert, PublicKey publicKey){
 
         try {
             cert.verify(publicKey);

@@ -9,7 +9,9 @@ import org.bouncycastle.asn1.x500.RDN;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.asn1.x500.style.IETFUtils;
+import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
+import org.bouncycastle.cert.ocsp.CertificateStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +31,10 @@ public class KeyStoreService {
 
 
     @Autowired
-    CertificateService certificateService;
+    private CertificateService certificateService;
+
+    @Autowired
+    private RevokationService revokationService;
 
 
     public KeyStore createNewKeystore(String type, String keyStorePassword) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException, NoSuchProviderException {
@@ -302,10 +307,42 @@ public class KeyStoreService {
         String keyStorePath = "keystores/" + dto.getType() + ".pfx";
         Certificate certificate = readCertificate(keyStorePath, dto.getKeyStorePassword(), dto.getAlias());
 
-        FileOutputStream os = new FileOutputStream("certificates/" + dto.getType() + "_" + dto.getAlias() + ".pfx");
+        FileOutputStream os = new FileOutputStream("certificates/" + dto.getType() + "_" + dto.getAlias() + ".cer");
         os.write("---------------BEGIN CERTIFICATE---------------\n".getBytes("US-ASCII"));
         os.write(Base64.encodeBase64(certificate.getEncoded(), true));
         os.write("---------------END CERTIFICATE---------------\n".getBytes("US-ASCII"));
         os.close();
     }
+
+
+
+    public byte[] getOCSP(CertificateDTO dto) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException {
+        String keyStorePath = "keystores/" + dto.getType().toLowerCase() + ".pfx";
+        char[] keyStorePasswordArray = dto.getKeyStorePassword().toCharArray();
+
+        KeyStore keyStore = KeyStore.getInstance("PKCS12");
+        try {
+            keyStore.load(new FileInputStream(keyStorePath), keyStorePasswordArray);
+        } catch (IOException | NoSuchAlgorithmException | CertificateException e) {
+            return null;
+        }
+
+        Certificate subjectCert = readCertificate(keyStorePath, dto.getKeyStorePassword(), dto.getAlias());
+        Certificate[] chain = getCertificateChain(dto.getKeyStorePassword(), dto.getAlias());
+        Certificate issuerCert = chain[0];
+        IssuerData issuerData = readIssuerDataFromStore(dto.getAlias(), dto.getKeyStorePassword(), dto.getKeyPassword());
+        X509CertificateHolder[] chainHolder = new X509CertificateHolder[chain.length];
+
+        for(int i=0; i<chain.length; i++){
+            chainHolder[i] = new JcaX509CertificateHolder((X509Certificate) chain[i]);
+        }
+
+        byte[] response = revokationService.getOCSPResponseForRevoked(subjectCert, issuerCert, issuerData.getPrivateKey(), chainHolder);
+
+        return  response;
+
+    }
+
+
+
 }

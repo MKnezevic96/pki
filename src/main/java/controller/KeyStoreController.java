@@ -3,6 +3,8 @@ package controller;
 import dto.CertificateDTO;
 import dto.DataDTO;
 import model.IssuerData;
+import org.bouncycastle.cert.cmp.CertificateStatus;
+import org.bouncycastle.util.encoders.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -83,4 +85,16 @@ public class KeyStoreController {
     }
 
 
+    @PostMapping(value = "/revoke")
+    public ResponseEntity<byte[]> revokeCertificate(@RequestBody CertificateDTO dto) {
+        try {
+            byte[] resp= keyStoreService.getOCSP(dto);
+
+            //System.out.println();
+            return new ResponseEntity<>(resp, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
 }
