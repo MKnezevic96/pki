@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import service.CertificateService;
 import service.KeyStoreService;
+import service.RevocationService;
 
 
 @RestController
@@ -19,6 +20,10 @@ public class CertificateController {
 
     @Autowired
     private KeyStoreService keyStoreService;
+
+    @Autowired
+    private RevocationService revocationService;
+
 
     @PostMapping(value = "/generateCertificate")
     public ResponseEntity<Void> generateCertificate(@RequestBody CertificateDTO dto) {
@@ -46,10 +51,6 @@ public class CertificateController {
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
-
-
-
-
 
 
 }

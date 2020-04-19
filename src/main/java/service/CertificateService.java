@@ -3,6 +3,7 @@ package service;
 import dto.CertificateDTO;
 import dto.DataDTO;
 import dto.ExtendedKeyUsageDTO;
+import model.CertificateSummary;
 import model.IssuerData;
 import model.SubjectData;
 
@@ -41,6 +42,7 @@ import java.util.*;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import repository.CertificateSummaryRepository;
 
 @Service
 public class CertificateService {
@@ -51,6 +53,9 @@ public class CertificateService {
 
     @Autowired
     private ValidationService validationService;
+
+    @Autowired
+    private CertificateSummaryRepository certificateSummaryRepository;
 
 
     public void generateCertificate(CertificateDTO dto) {
@@ -118,6 +123,13 @@ public class CertificateService {
 
             Certificate[] chain = keyStoreService.getCertificateChain(dto.getKeyStorePassword(), dto.getIssuerAlias());
             if(validationService.validateCertificateChain(chain)){
+
+                CertificateSummary certificateSummary = new CertificateSummary();
+                certificateSummary.setAlias(dto.getAlias());
+                certificateSummary.setIssuerAlias(dto.getIssuerAlias());
+                certificateSummary.setSerialNumber(new BigInteger(subjectData.getSerialNumber()).toString());
+                certificateSummaryRepository.save(certificateSummary);
+
                 keyStoreService.saveCertificate(dto.getKeyPassword(), dto.getAlias(),  dto.getKeyStorePassword(), subjectData.getPrivateKey(), cert);
                 System.out.println("-------------------------------------------"+cert+"-------------------------------");
             }
@@ -275,7 +287,14 @@ public class CertificateService {
         certConverter = certConverter.setProvider("BC");
         X509Certificate cert = certConverter.getCertificate(certHolder);
 
+        CertificateSummary certificateSummary = new CertificateSummary();
+        certificateSummary.setAlias(dto.getAlias());
+        certificateSummary.setIssuerAlias(dto.getAlias());
+        certificateSummary.setSerialNumber(new BigInteger(subjectData.getSerialNumber()).toString());
+        certificateSummary.setRoot(true);
+        certificateSummaryRepository.save(certificateSummary);
 
+        System.out.println("-------------------------------------------"+cert+"-------------------------------");
         keyStoreService.saveCertificate(dto.getKeyPassword(), dto.getAlias(),  dto.getKeyStorePassword(), subjectData.getPrivateKey(), cert);
 
     }
@@ -284,36 +303,6 @@ public class CertificateService {
         Security.addProvider(new BouncyCastleProvider());
     }
 
-
-//    // certificate reader from file, da li da ga smesta u listu ?
-//
-//    public static final String BASE64_ENC_CERT_FILE = "./data/sertifikati.cer";
-//    public static final String BIN_ENC_CERT_FILE = "./data/sertifikatibin.cer";
-//
-//    private void readFromBase64EncFile() {
-//        try {
-//            FileInputStream fis = new FileInputStream(BASE64_ENC_CERT_FILE);
-//            BufferedInputStream bis = new BufferedInputStream(fis);
-//
-//            CertificateFactory cf = CertificateFactory.getInstance("X.509");
-//
-//            //Cita sertifikat po sertifikat
-//            //Svaki certifikat je izmedju
-//            //-----BEGIN CERTIFICATE-----,
-//            //i
-//            //-----END CERTIFICATE-----.
-//            while (bis.available() > 0) {
-//                Certificate cert = cf.generateCertificate(bis);
-//                System.out.println(cert.toString());
-//            }
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        } catch (CertificateException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
 
 
     private static ExtendedKeyUsage createExtendedUsage(Collection<ASN1ObjectIdentifier> usages) {

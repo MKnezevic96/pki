@@ -10,11 +10,11 @@ import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.asn1.x500.style.IETFUtils;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.cert.*;
 import java.security.cert.Certificate;
@@ -29,13 +29,19 @@ public class KeyStoreService {
 
 
     @Autowired
-    CertificateService certificateService;
+    private CertificateService certificateService;
+
+    @Autowired
+    private RevokationService revokationService;
+
+    @Autowired
+    private OCSPService ocspService;
 
 
     public KeyStore createNewKeystore(String type, String keyStorePassword) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException, NoSuchProviderException {
         char[] passwordArray = keyStorePassword.toCharArray();
 
-        File file = new File("keystores/" + type.toLowerCase() + ".pfx");
+        File file = new File("keystores/" + type.toLowerCase() + ".p12");
         KeyStore keyStore = KeyStore.getInstance("PKCS12");
         keyStore.load(null, passwordArray);
         keyStore.store(new FileOutputStream(file), keyStorePassword.toCharArray());
@@ -48,7 +54,7 @@ public class KeyStoreService {
         char[] keyStorePasswordArray = keyStorePassword.toCharArray();
 
         CertificateType type = getCertificateType(certificate);
-        String keyStorePath = "keystores/" + type + ".pfx";
+        String keyStorePath = "keystores/" + type + ".p12";
 
         KeyStore keyStore = KeyStore.getInstance("PKCS12");
         try {
@@ -100,7 +106,7 @@ public class KeyStoreService {
             char[] keyPasswordArray = keyPassword.toCharArray();
             char[] keyStorePasswordArray = keyStorePassword.toCharArray();
 
-            String keyStorePath = "keystores/root.pfx";
+            String keyStorePath = "keystores/root.p12";
             KeyStore keyStore = KeyStore.getInstance("PKCS12");
 
             BufferedInputStream in = new BufferedInputStream(new FileInputStream(keyStorePath));
@@ -112,7 +118,7 @@ public class KeyStoreService {
             PublicKey pubKey;
 
             if(cert == null){ //ako se ne nalazi u root-u, da potrazi u intermediate
-                keyStorePath = "keystores/intermediate.pfx";
+                keyStorePath = "keystores/intermediate.p12";
                 keyStore = KeyStore.getInstance("PKCS12");
 
                 in = new BufferedInputStream(new FileInputStream(keyStorePath));
@@ -143,7 +149,7 @@ public class KeyStoreService {
             char[] keyPasswordArray = keyPassword.toCharArray();
             char[] keyStorePasswordArray = keyStorePassword.toCharArray();
 
-            String keyStorePath = "keystores/root.pfx";
+            String keyStorePath = "keystores/root.p12";
             KeyStore keyStore = KeyStore.getInstance("PKCS12");
 
             BufferedInputStream in = new BufferedInputStream(new FileInputStream(keyStorePath));
@@ -151,7 +157,7 @@ public class KeyStoreService {
 
             Certificate cert = keyStore.getCertificate(alias);
             if(cert == null){
-                keyStorePath = "keystores/intermediate.pfx";
+                keyStorePath = "keystores/intermediate.p12";
                 in = new BufferedInputStream(new FileInputStream(keyStorePath));
                 keyStore.load(in, keyStorePasswordArray);
                 cert = keyStore.getCertificate(alias);
@@ -190,7 +196,7 @@ public class KeyStoreService {
     //TODO namestiti putanju
     public List<String> getAllCertAliasesFromKeyStore(String type, String keyStorePassword)
             throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
-        String keyStorePath = "keystores/root.pfx";
+        String keyStorePath = "keystores/root.p12";
         char[] keyStorePasswordArray = keyStorePassword.toCharArray();
 
         KeyStore keyStore = KeyStore.getInstance("PKCS12");
@@ -203,7 +209,7 @@ public class KeyStoreService {
         Enumeration<String> aliases = keyStore.aliases();
         List<String> list = Collections.list(aliases);
 
-        keyStorePath = "keystores/intermediate.pfx";
+        keyStorePath = "keystores/intermediate.p12";
         try {
             keyStore.load(new FileInputStream(keyStorePath), keyStorePasswordArray);
         } catch (FileNotFoundException e) {
@@ -220,7 +226,7 @@ public class KeyStoreService {
 
     public Certificate[] getCertificateChain(String keyStorePassword, String alias)
             throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
-        String keyStorePath = "keystores/root.pfx";
+        String keyStorePath = "keystores/root.p12";
         char[] keyStorePasswordArray = keyStorePassword.toCharArray();
 
         KeyStore keyStore = KeyStore.getInstance("PKCS12");
@@ -233,7 +239,7 @@ public class KeyStoreService {
         Certificate[] chain = keyStore.getCertificateChain(alias);
 
         if(chain == null ){
-            keyStorePath = "keystores/intermediate.pfx";
+            keyStorePath = "keystores/intermediate.p12";
 
             try {
                 keyStore.load(new FileInputStream(keyStorePath), keyStorePasswordArray);
@@ -252,7 +258,7 @@ public class KeyStoreService {
 
     public List<CertificateDTO> getAllCertificates(String type, String keyStorePassword)
             throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
-        String keyStorePath = "keystores/" + type.toLowerCase() + ".pfx";
+        String keyStorePath = "keystores/" + type.toLowerCase() + ".p12";
         char[] keyStorePasswordArray = keyStorePassword.toCharArray();
 
         KeyStore keyStore = KeyStore.getInstance("PKCS12");
@@ -271,6 +277,9 @@ public class KeyStoreService {
 
             CertificateDTO dto = new CertificateDTO();
             dto.setAlias(alias);
+
+            JcaX509CertificateHolder certHolder = new JcaX509CertificateHolder((X509Certificate) cert);
+            dto.setSerialNumber(certHolder.getSerialNumber().toString());
 
             X500Name x500name = new JcaX509CertificateHolder((X509Certificate) cert).getSubject();
             RDN cn = x500name.getRDNs(BCStyle.CN)[0];
@@ -299,13 +308,15 @@ public class KeyStoreService {
             throws CertificateException, IOException {
 
 
-        String keyStorePath = "keystores/" + dto.getType() + ".pfx";
+        String keyStorePath = "keystores/" + dto.getType() + ".p12";
         Certificate certificate = readCertificate(keyStorePath, dto.getKeyStorePassword(), dto.getAlias());
 
-        FileOutputStream os = new FileOutputStream("certificates/" + dto.getType() + "_" + dto.getAlias() + ".pfx");
+        FileOutputStream os = new FileOutputStream("certificates/" + dto.getType() + "_" + dto.getAlias() + ".p12");
         os.write("---------------BEGIN CERTIFICATE---------------\n".getBytes("US-ASCII"));
         os.write(Base64.encodeBase64(certificate.getEncoded(), true));
         os.write("---------------END CERTIFICATE---------------\n".getBytes("US-ASCII"));
         os.close();
     }
+
+
 }

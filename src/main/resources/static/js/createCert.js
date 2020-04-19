@@ -50,6 +50,8 @@ window.onload = function () {
             let extendedKeyUsageDTO
 
 
+
+
             if(template ==="Server Auth"){
                 keyUsageDTO = { "keyUsage": true,"digitalSignature": true, "keyEncipherment":true,  "keyAgreement":true}
                 extendedKeyUsageDTO = { "extendedKeyUsage": true, "serverAuth": true}
