@@ -32,9 +32,6 @@ public class KeyStoreService {
     private CertificateService certificateService;
 
     @Autowired
-    private RevokationService revokationService;
-
-    @Autowired
     private OCSPService ocspService;
 
 
@@ -304,8 +301,7 @@ public class KeyStoreService {
     }
 
 
-    public void downloadCertificate(CertificateDTO dto)
-            throws CertificateException, IOException {
+    public void downloadCertificate(CertificateDTO dto) throws CertificateException, IOException {
 
 
         String keyStorePath = "keystores/" + dto.getType() + ".p12";
