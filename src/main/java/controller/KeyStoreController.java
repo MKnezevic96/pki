@@ -3,6 +3,8 @@ package controller;
 import dto.CertificateDTO;
 import dto.DataDTO;
 import model.IssuerData;
+import org.bouncycastle.cert.cmp.CertificateStatus;
+import org.bouncycastle.util.encoders.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -81,6 +83,5 @@ public class KeyStoreController {
         keyStoreService.downloadCertificate(dto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
 
 }
