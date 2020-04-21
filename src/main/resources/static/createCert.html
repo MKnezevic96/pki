@@ -2,6 +2,44 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <!-------------------------------------------------------------------------------------------------------->
+    <style>
+        .multiselect {
+            width: 200px;
+        }
+
+        .selectBox {
+            position: relative;
+        }
+
+        .selectBox select {
+            width: 100%;
+            font-weight: bold;
+        }
+
+        .overSelect {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+        }
+
+        #checkboxes {
+            display: none;
+            border: 1px #dadada solid;
+        }
+
+        #checkboxes label {
+            display: block;
+        }
+
+        #checkboxes label:hover {
+            background-color: #1e90ff;
+        }
+    </style>
+
+    <!-------------------------------------------------------------------------------------------------------->
     <title>Create certificate</title>
 
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
@@ -82,21 +120,6 @@
                             <input type="text" id="email" class="form-control">
                             <label for="email">Email</label>
                         </div>
-                            <div class="md-form">
-                                <select id="template" class="form-control">
-                                    <option disabled selected value>Template</option>
-                                    <option value="Server Auth">Server Auth</option>
-                                    <option value="Client Auth">Client Auth</option>
-                                    <option value="Code signing">Code signing</option>
-                                    <option value="Email protection">Email protection</option>
-                                    <option value="Time stamping">Time stamping</option>
-                                    <option value="OCSP signing">OCSP signing</option>
-                                    <option value="CA">CA</option>
-                                </select>
-                        <div class="md-form">
-                            <input type="text" id="alias" class="form-control">
-                            <label for="alias">Alias</label>
-                        </div>
                         <div class="md-form">
                             <i class="fa fa-lock prefix grey-text"></i>
                             <input type="password" id="keyPassword" class="form-control">
@@ -108,10 +131,12 @@
                             <label for="keyStorePassword">KeyStore Password</label>
                         </div>
 
+
                         <div class="text-center">
                             <button class="btn btn-default waves-effect waves-light" id="btnNext">Next</button>
                         </div>
                                 <div id="afterNext">
+
                                     <div class="md-form">
                                         <select id="issuerCA" name="issuerCA" class="form-control">
                                             <option disabled selected value>Choose Issuer</option>
@@ -122,8 +147,74 @@
                                         <input type="password" id="keyPasswordIssuer" class="form-control">
                                         <label for="keyPasswordIssuer">Key Password for issuer</label>
                                     </div>
+                                    <div class="md-form">
+                                        <input type="text" id="alias" class="form-control">
+                                        <label for="alias">Alias</label>
+                                    </div>
+
                                     <div class="text-center">
-                                        <button class="btn btn-default waves-effect waves-light" id="btnCreate">Create and sign</button>
+                                        <button class="btn btn-default waves-effect waves-light" id="btnNext2">Next</button>
+                                    </div>
+
+                                    <div id="afterNext2">
+                                        <div class="checkbox">
+                                            <label><input type="checkbox" id="CA" value="">  CA</label>
+                                        </div>
+                                    <!--<div class="md-form">
+                                        <select id="template" class="form-control" >
+                                            <option disabled selected value>Template</option>
+                                            <option value="Server Auth">Server Auth</option>
+                                            <option value="Client Auth">Client Auth</option>
+                                            <option value="Code signing">Code signing</option>
+                                            <option value="Email protection">Email protection</option>
+                                            <option value="Time stamping">Time stamping</option>
+                                            <option value="OCSP signing">OCSP signing</option>
+                                            <option value="CA">CA</option>
+                                        </select>-->
+                                                <div class="multiselect">
+                                                    <div class="selectBox" onclick="showCheckboxes()">
+                                                        <select>
+                                                            <option>Template</option>
+                                                        </select>
+                                                        <div class="overSelect"></div>
+                                                    </div>
+                                                    <div id="checkboxes">
+<!--                                                        <label for="server_auth">-->
+<!--                                                            <input type="checkbox" id="server_auth" />Server Auth</label>-->
+<!--                                                        <label for="client_auth">-->
+<!--                                                            <input type="checkbox" id="client_auth" />Client Auth</label>-->
+<!--                                                        <label for="code_signing">-->
+<!--                                                            <input type="checkbox" id="code_signing" />Code signing</label>-->
+<!--                                                        <label for="email_protection">-->
+<!--                                                            <input type="checkbox" id="email_protection" />Email protection</label>-->
+<!--                                                        <label for="time_stamping">-->
+<!--                                                            <input type="checkbox" id="time_stamping" />Time stamping</label>-->
+<!--                                                        <label for="OCSP_signing">-->
+<!--                                                            <input type="checkbox" id="OCSP_signing" />OCSP signing</label>-->
+                                                    </div>
+                                                </div>
+
+                                            <script>
+
+                                                var expanded = false;
+
+                                                function showCheckboxes() {
+                                                    var checkboxes = document.getElementById("checkboxes");
+                                                    if (!expanded) {
+                                                        checkboxes.style.display = "block";
+                                                        expanded = true;
+                                                    } else {
+                                                        checkboxes.style.display = "none";
+                                                        expanded = false;
+                                                    }
+                                                }
+                                            </script>
+
+
+
+                                        <div class="text-center">
+                                            <button class="btn btn-default waves-effect waves-light" id="btnCreate">Create and sign</button>
+                                        </div>
                                     </div>
                                 </div>
                             <div>

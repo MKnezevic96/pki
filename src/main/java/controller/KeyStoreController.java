@@ -77,6 +77,35 @@ public class KeyStoreController {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
+    @GetMapping(value="/getCert/{keyStorePassword}/{keyPassword}")
+    public ResponseEntity<CertificateDTO> getCertificate(@PathVariable("keyStorePassword") String keyStorePassword, @PathVariable("keyPassword") String keyPassword){
+
+        try {
+            List<CertificateDTO> root = keyStoreService.getAllCertificates("root", keyStorePassword);
+            List<CertificateDTO> intermediate = keyStoreService.getAllCertificates("intermediate", keyStorePassword);
+            List<CertificateDTO> endentity = keyStoreService.getAllCertificates("endentity", keyStorePassword);
+
+            List<CertificateDTO> all = new ArrayList<>();
+            if(root != null)all.addAll(root);
+            if(intermediate != null)all.addAll(intermediate);
+            if(endentity != null)all.addAll(endentity);
+            CertificateDTO res = null;
+            System.out.println("Sifra"+keyPassword);
+            for(CertificateDTO cDTO : all){
+                System.out.println("password"+cDTO.getKeyPassword());
+                if(cDTO.getKeyPassword().equals(keyPassword)){
+                    res = cDTO;
+                }
+            }
+            return new ResponseEntity<>(res, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+
+
 
     @PostMapping(value="/download")
     public ResponseEntity<CertificateDTO> downloadCertificate(@RequestBody CertificateDTO dto) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
