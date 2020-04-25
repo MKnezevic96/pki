@@ -2,6 +2,7 @@ package service;
 
 import dto.CertificateDTO;
 import dto.DataDTO;
+import dto.ExtendedKeyUsageDTO;
 import enumeration.CertificateType;
 import model.IssuerData;
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -9,6 +10,7 @@ import org.bouncycastle.asn1.x500.RDN;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.asn1.x500.style.IETFUtils;
+import org.bouncycastle.asn1.x509.ExtendedKeyUsage;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 import org.bouncycastle.cert.ocsp.CertificateStatus;
@@ -276,6 +278,90 @@ public class KeyStoreService {
 
             CertificateDTO dto = new CertificateDTO();
             dto.setAlias(alias);
+
+            //ExtendedKeyUsageDTO ekuDTO = new ExtendedKeyUsageDTO();
+            //List<String> lis = X509Certificate.getExtendedKeyUsage();
+            //ekuDTO = (ExtendedKeyUsageDTO) X509Certificate.getExtendedKeyUsage(cert);
+            //List<String> lis = new JcaX509CertificateHolder((X509Certificate) cert).get;
+            //X509Certificate.getExtendedKeyUsage();
+            //dto.setExtendedKeyUsageDTO((ExtendedKeyUsageDTO) lis);
+            //public List<String> eku = getExtendedKeyUsage();
+
+            X509Certificate xcert =  (X509Certificate) cert;
+            if(xcert == null){
+                System.out.println("null je");
+            }else{
+                System.out.println("ima necega");
+            }
+            List<String> g = xcert.getExtendedKeyUsage();
+            final boolean[] k = xcert.getKeyUsage();
+            try {
+                if (k[0]) {
+                    System.out.println("digitalSignature");
+                }
+            }catch(NullPointerException e){
+                System.out.println("nije digitalSignature");
+            }
+            try {
+                if(k[1]){
+                    System.out.println("nonRepudiation");
+                }
+            }
+            catch(NullPointerException e){
+                System.out.println("nije nonRepudiation");
+            }
+            try {
+                if (k[2]) {
+                    System.out.println("keyEncipherment");
+                }
+            }
+            catch(NullPointerException e){
+                System.out.println("nije keyEncipherment");
+            }
+            try {
+                if (k[3]) {
+                    System.out.println("dataEncipherment");
+                }
+            }catch(NullPointerException e){
+                System.out.println("nije dataEncipherment");
+            }
+            try {
+                if (k[4]) {
+                    System.out.println("keyAgreement");
+                }
+            }catch (NullPointerException e){
+                System.out.println("nije keyAgreement");
+            }
+            try {
+                if (k[5]) {
+                    System.out.println("keyCertSign");
+                }
+            }catch(NullPointerException e){
+                System.out.println("nije keyCertSign");
+            }
+            try {
+                if (k[6]) {
+                    System.out.println("cRLSign");
+                }
+            }catch (NullPointerException e){
+                System.out.println("nije cRLSign");
+            }
+            try {
+                if (k[7]) {
+                    System.out.println("encipherOnly");
+                }
+            }catch (NullPointerException e){
+                System.out.println("nije encipherOnly");
+            }
+            try {
+                if (k[8]) {
+                    System.out.println("decipherOnly");
+                }
+            }catch (NullPointerException e){
+                System.out.println("nije decipherOnly");
+            }
+            //System.out.println("--------"+ k);
+            //dto.setExtendedKeyUsageDTO((ExtendedKeyUsageDTO) g);
 
             X500Name x500name = new JcaX509CertificateHolder((X509Certificate) cert).getSubject();
             RDN cn = x500name.getRDNs(BCStyle.CN)[0];

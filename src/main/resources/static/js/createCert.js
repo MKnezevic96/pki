@@ -45,53 +45,39 @@ window.onload = function () {
         $('#afterNext2').show()
 
         let keyStorePassword = $('#keyStorePassword').val()
-        let keyPassword = $('#keyPasswordIssuer').val()
+        //let keyPassword = $('#keyPasswordIssuer').val()
+        let issuerAlias = $('#issuerCA option:selected').val()
         $.ajax({
             type: 'GET',
-            url: 'api/keyStore/getCert/'+keyStorePassword+'/'+keyPassword,
+            url: 'api/keyStore/getCert/'+keyStorePassword+'/'+issuerAlias,
             contentType: "application/json",
             complete: function(data)
             {
                 value = data.responseJSON
-                    if(!value.basicConstrains) {
-                        $('#checkboxes').append('<label for="server_auth">\n' +
-                            '                                                            <input type="checkbox" id="server_auth" />Server Auth</label>')
-                        $('#checkboxes').append('<label for="client_auth">\n' +
-                            '                                                            <input type="checkbox" id="client_auth" />Client Auth</label>')
-                        $('#checkboxes').append('<label for="code_signing">\n' +
-                            '                                                            <input type="checkbox" id="code_signing" />Code signing</label>')
-                        $('#checkboxes').append('<label for="email_protection">\n' +
-                            '                                                            <input type="checkbox" id="email_protection" />Email protection</label>')
-                        $('#checkboxes').append('<label for="time_stamping">\n' +
-                            '                                                            <input type="checkbox" id="time_stamping" />Time stamping</label>')
-                        $('#checkboxes').append('<label for="OCSP_signing">\n' +
-                            '                                                            <input type="checkbox" id="OCSP_signing" />OCSP signing</label>')
-                    }else{
-                        if(value.extendedKeyUsageDTO.serverAuth === true){
-                            $('#checkboxes').append('<label for="server_auth">\n' +
-                                '                                                            <input type="checkbox" id="server_auth" />Server Auth</label>')
-                        }
-                        if(value.extendedKeyUsageDTO.clientAuth === true){
-                            $('#checkboxes').append('<label for="client_auth">\n' +
-                                '                                                            <input type="checkbox" id="client_auth" />Client Auth</label>')
-                        }
-                        if(value.extendedKeyUsageDTO.codeSigning === true){
-                            $('#checkboxes').append('<label for="code_signing">\n' +
-                                '                                                            <input type="checkbox" id="code_signing" />Code signing</label>')
-                        }
-                        if(value.extendedKeyUsageDTO.emailProtection === true){
-                            $('#checkboxes').append('<label for="email_protection">\n' +
-                                '                                                            <input type="checkbox" id="email_protection" />Email protection</label>')
-                        }
-                        if(value.extendedKeyUsageDTO.timeStamping === true){
-                            $('#checkboxes').append('<label for="time_stamping">\n' +
-                                '                                                            <input type="checkbox" id="time_stamping" />Time stamping</label>')
-                        }
-                        if(value.extendedKeyUsageDTO.ocspSigning === true){
-                            $('#checkboxes').append('<label for="OCSP_signing">\n' +
-                                '                                                            <input type="checkbox" id="OCSP_signing" />OCSP signing</label>')
-                        }
-                    }
+                if(value.extendedKeyUsageDTO.serverAuth === true){
+                    $('#checkboxes').append('<label for="server_auth">\n' +
+                        '                                                            <input type="checkbox" id="server_auth" />Server Auth</label>')
+                }
+                if(value.extendedKeyUsageDTO.clientAuth === true){
+                    $('#checkboxes').append('<label for="client_auth">\n' +
+                        '                                                            <input type="checkbox" id="client_auth" />Client Auth</label>')
+                }
+                if(value.extendedKeyUsageDTO.codeSigning === true){
+                    $('#checkboxes').append('<label for="code_signing">\n' +
+                        '                                                            <input type="checkbox" id="code_signing" />Code signing</label>')
+                }
+                if(value.extendedKeyUsageDTO.emailProtection === true){
+                    $('#checkboxes').append('<label for="email_protection">\n' +
+                        '                                                            <input type="checkbox" id="email_protection" />Email protection</label>')
+                }
+                if(value.extendedKeyUsageDTO.timeStamping === true){
+                    $('#checkboxes').append('<label for="time_stamping">\n' +
+                        '                                                            <input type="checkbox" id="time_stamping" />Time stamping</label>')
+                }
+                if(value.extendedKeyUsageDTO.ocspSigning === true){
+                    $('#checkboxes').append('<label for="OCSP_signing">\n' +
+                        '                                                            <input type="checkbox" id="OCSP_signing" />OCSP signing</label>')
+                }
             }
 
         })
@@ -181,7 +167,7 @@ window.onload = function () {
             }
             let keyUsageDTO;
             let extendedKeyUsageDTO;
-            keyUsageDTO = { "keyUsage": keyUsage, "digitalSignature": digitalSignature, "keyEncipherment": keyEncipherment, "keyAgreement": keyAgreement,  "nonRepudiation": nonRepudiation}
+            keyUsageDTO = { "keyUsage": keyUsage, "digitalSignature": digitalSignature, "keyEncipherment": keyEncipherment, "keyAgreement": keyAgreement,  "nonRepudiation": nonRepudiation, "keyCertSign": keyCertSign}
             extendedKeyUsageDTO = { "extendedKeyUsage": extendedKeyUsage, "serverAuth": serverAuth, "clientAuth": clientAuth, "codeSigning": codeSigning, "emailProtection": emailProtection, "timeStamping": timeStamping, "ocspSigning": ocspSigning }
 
 

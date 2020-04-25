@@ -90,10 +90,11 @@ public class KeyStoreController {
             if(intermediate != null)all.addAll(intermediate);
             if(endentity != null)all.addAll(endentity);
             CertificateDTO res = null;
-            System.out.println("Sifra"+keyPassword);
+            System.out.println("Sifra "+keyPassword);
             for(CertificateDTO cDTO : all){
-                System.out.println("password"+cDTO.getKeyPassword());
-                if(cDTO.getKeyPassword().equals(keyPassword)){
+                System.out.println("password "+cDTO.getAlias());
+                if(cDTO.getAlias().equals(keyPassword)){
+                    System.out.println("nasao");
                     res = cDTO;
                 }
             }
