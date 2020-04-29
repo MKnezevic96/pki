@@ -15,18 +15,15 @@ import org.bouncycastle.asn1.x509.Extension;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
-import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
 import org.bouncycastle.jce.X509KeyUsage;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.*;
@@ -58,8 +55,10 @@ public class CertificateService {
     private CertificateSummaryRepository certificateSummaryRepository;
 
 
+
     public void generateCertificate(CertificateDTO dto) {
         try {
+
             JcaContentSignerBuilder builder = new JcaContentSignerBuilder("SHA256withECDSA");
             builder = builder.setProvider("BC");
 
@@ -121,7 +120,7 @@ public class CertificateService {
 
             X509Certificate cert = certConverter.getCertificate(certHolder);
 
-            Certificate[] chain = keyStoreService.getCertificateChain(dto.getKeyStorePassword(), dto.getIssuerAlias());
+            Certificate[] chain = keyStoreService.getCertificateChain(dto.getIssuerAlias());
             if(validationService.validateCertificateChain(chain)){
 
                 CertificateSummary certificateSummary = new CertificateSummary();
@@ -130,29 +129,11 @@ public class CertificateService {
                 certificateSummary.setSerialNumber(new BigInteger(subjectData.getSerialNumber()).toString());
                 certificateSummaryRepository.save(certificateSummary);
 
-                keyStoreService.saveCertificate(dto.getKeyPassword(), dto.getAlias(),  dto.getKeyStorePassword(), subjectData.getPrivateKey(), cert);
+                keyStoreService.saveCertificate(dto.getAlias(), subjectData.getPrivateKey(), cert);
                 System.out.println("-------------------------------------------"+cert+"-------------------------------");
             }
 
-        } catch (CertificateEncodingException e) {
-            e.printStackTrace();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
-        } catch (OperatorCreationException e) {
-            e.printStackTrace();
-        } catch (CertificateException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (KeyStoreException e) {
-            e.printStackTrace();
-        } catch (NoSuchProviderException e) {
-            e.printStackTrace();
-        } catch (UnrecoverableKeyException e) {
+        } catch (IllegalArgumentException | IllegalStateException | OperatorCreationException | CertificateException | IOException | NoSuchAlgorithmException | KeyStoreException | NoSuchProviderException e) {
             e.printStackTrace();
         }
 
@@ -163,22 +144,19 @@ public class CertificateService {
     private IssuerData generateIssuerDataRoot(PrivateKey issuerKey, PublicKey publicKeyIssuer, DataDTO data) {
         X500NameBuilder builder = new X500NameBuilder(BCStyle.INSTANCE);
         builder.addRDN(BCStyle.CN, data.getCommonName());
-//        builder.addRDN(BCStyle.SURNAME, data.getSurname());
-//        builder.addRDN(BCStyle.GIVENNAME, data.getGivenName());
         builder.addRDN(BCStyle.O, data.getOrganisationName());
         builder.addRDN(BCStyle.OU, data.getOrganisationUnitName());
         builder.addRDN(BCStyle.C, data.getCountryName());
         builder.addRDN(BCStyle.E, data.getEmail());
         builder.addRDN(BCStyle.L, data.getLocalityName());
-//        builder.addRDN(BCStyle.UID, data.getUid());
 
         return new IssuerData(builder.build(), issuerKey, publicKeyIssuer);
     }
 
 
-    private IssuerData generateIssuerData(CertificateDTO dto) throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, NoSuchProviderException, IOException {
+    private IssuerData generateIssuerData(CertificateDTO dto) {
 
-        IssuerData issuerData = keyStoreService.readIssuerDataFromStore(dto.getIssuerAlias(), dto.getKeyStorePassword(), dto.getKeyPassword());
+        IssuerData issuerData = keyStoreService.readIssuerDataFromStore(dto.getIssuerAlias());
 
         return issuerData;
     }
@@ -194,15 +172,11 @@ public class CertificateService {
 
             X500NameBuilder builder = new X500NameBuilder(BCStyle.INSTANCE);
             builder.addRDN(BCStyle.CN, data.getCommonName());
-  //          builder.addRDN(BCStyle.SURNAME, data.getSurname());
-  //          builder.addRDN(BCStyle.GIVENNAME, data.getGivenName());
             builder.addRDN(BCStyle.O, data.getOrganisationName());
             builder.addRDN(BCStyle.OU, data.getOrganisationUnitName());
             builder.addRDN(BCStyle.C, data.getCountryName());
             builder.addRDN(BCStyle.E, data.getEmail());
             builder.addRDN(BCStyle.L, data.getLocalityName());
-//            builder.addRDN(BCStyle.UID, data.getUid());
-
             SimpleDateFormat sdf = new SimpleDateFormat("EE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
             Calendar cal = Calendar.getInstance();
 
@@ -239,18 +213,14 @@ public class CertificateService {
             ecsp = new ECGenParameterSpec("secp256k1");
             keyGen.initialize(ecsp);
             return keyGen.generateKeyPair();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (NoSuchProviderException e) {
-            e.printStackTrace();
-        } catch (InvalidAlgorithmParameterException e) {
+        } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException e) {
             e.printStackTrace();
         }
         return null;
     }
 
 
-    //TODO proveriti duzinu trajanja
+
     public void generateSelfSignedX509Certificate(CertificateDTO dto) throws CertificateException, IllegalStateException,
             OperatorCreationException, NoSuchAlgorithmException, KeyStoreException, NoSuchProviderException, IOException, ParseException {
 
@@ -295,11 +265,11 @@ public class CertificateService {
         certificateSummaryRepository.save(certificateSummary);
 
         System.out.println("-------------------------------------------"+cert+"-------------------------------");
-        keyStoreService.saveCertificate(dto.getKeyPassword(), dto.getAlias(),  dto.getKeyStorePassword(), subjectData.getPrivateKey(), cert);
+        keyStoreService.saveCertificate(dto.getAlias(), subjectData.getPrivateKey(), cert);
 
     }
 
-    public void addBouncyCastleAsSecurityProvider() {
+    private void addBouncyCastleAsSecurityProvider() {
         Security.addProvider(new BouncyCastleProvider());
     }
 

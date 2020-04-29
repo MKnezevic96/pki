@@ -10,6 +10,7 @@ public class CertificateDTO {
     private String alias;
     private String keyPassword;
     private String keyStorePassword;
+    private String issuerKeyPassword;
     private String notBefore;
     private String notAfter;
     private boolean basicConstrains;
@@ -29,7 +30,7 @@ public class CertificateDTO {
     public CertificateDTO(String serialNumber, DataDTO issuerData, DataDTO subjectData, String alias, String keyPassword,
                           String keyStorePassword, String notBefore, String notAfter, boolean basicConstrains,
                           ExtendedKeyUsageDTO extendedKeyUsageDTO, KeyUsageDTO keyUsageDTO, boolean authorityKeyIdentifier, boolean subjectKeyIdentifier,
-                          String issuerAlias, String type) {
+                          String issuerAlias, String type, String issuerKeyPassword) {
         this.serialNumber = serialNumber;
 
         this.alias = alias;
@@ -42,6 +43,7 @@ public class CertificateDTO {
         this.subjectKeyIdentifier = subjectKeyIdentifier;
         this.issuerAlias = issuerAlias;
         this.type = type;
+        this.issuerKeyPassword = issuerKeyPassword;
 
         KeyUsageDTO keyUsage = new KeyUsageDTO();
         keyUsage.setKeyUsage(keyUsageDTO.isKeyUsage());
@@ -221,5 +223,13 @@ public class CertificateDTO {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getIssuerKeyPassword() {
+        return issuerKeyPassword;
+    }
+
+    public void setIssuerKeyPassword(String issuerKeyPassword) {
+        this.issuerKeyPassword = issuerKeyPassword;
     }
 }
