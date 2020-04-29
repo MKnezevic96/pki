@@ -1,18 +1,9 @@
 window.onload = function () {
 
-    $('#certs').hide()
-    $('#second').hide()
-
-
-    $('#btnConfirm').click(function(e){
-    		e.preventDefault()
-
-            let keyStorePassword = $('#keyStorePassword').val()
-            $('#passwordDiv').hide()
 
             $.ajax({
         		type: 'GET',
-        		url: 'api/keyStore/getCerts/' + keyStorePassword,
+        		url: 'api/keyStore/getCerts',
         		contentType: "application/json",
         		complete: function(data)
         		{
@@ -23,7 +14,7 @@ window.onload = function () {
                         $('#certs tbody').html('');
                         for(let cert of certs)
                         {
-                            addCertTr(cert, keyStorePassword);
+                            addCertTr(cert);
                         }
                         $('#certs').show()
                    }
@@ -34,72 +25,59 @@ window.onload = function () {
 
         	})
 
-    })
-
 }
 
 
 
 
-function addCertTr(cert, keyStorePassword)
+function addCertTr(cert)
 {
 
-
-let keyPassword ="a"
-
-
-
         let issuerDataDTO = {"commonName":cert.issuerData.commonName}
-                let subjectDataDTO = {"commonName":cert.subjectData.commonName}
-                let certDto = JSON.stringify({"issuerData":issuerDataDTO, "subjectData":subjectDataDTO, "keyStorePassword":keyStorePassword,
-                                              "type":cert.type, "alias":cert.alias, "keyPassword":keyPassword})
+        let subjectDataDTO = {"commonName":cert.subjectData.commonName}
+        let certDto = JSON.stringify({"issuerData":issuerDataDTO, "subjectData":subjectDataDTO, "type":cert.type, "alias":cert.alias})
 
-            		console.log(certDto)
-            		$.ajax({
-            			type: 'POST',
-            			url:'/api/ocsp/ocspResponse',
-            			data: certDto,
-            			dataType : "json",
-            			contentType : "application/json; charset=utf-8",
-            			complete: function(data)
-                            {
+            $.ajax({
+                type: 'POST',
+                url:'/api/ocsp/ocspResponse',
+                data: certDto,
+                dataType : "json",
+                contentType : "application/json; charset=utf-8",
+                complete: function(data)
+                    {
+                        status = data.responseText
 
-                                console.log(data.responseText)
-                                status = data.responseText
-
-
-
-
-	let tr=$('<tr></tr>')
-	let tdAlias=$('<td>'+cert.alias +'</td>')
-	let tdSubjectCN=$('<td>'+cert.subjectData.commonName +'</td>')
-	let tdIssuerCN=$('<td>'+cert.issuerData.commonName +'</td>')
-	let tdType=$('<td>'+ cert.type + '</td>')
-	let tdStatus=$('<td>' + status + '</td>')
-    let tdDownload = $('<td><button class="btn btn-default waves-effect waves-light" id="btnDownload">Download</button></td>')
-    let tdRevoke = $('<td><button class="btn btn-default waves-effect waves-light" id="btnRevoke">Revoke</button></td>')
+                        let tr=$('<tr></tr>')
+                        let tdAlias=$('<td>'+cert.alias +'</td>')
+                        let tdSubjectCN=$('<td>'+cert.subjectData.commonName +'</td>')
+                        let tdIssuerCN=$('<td>'+cert.issuerData.commonName +'</td>')
+                        let tdType=$('<td>'+ cert.type + '</td>')
+                        let tdStatus=$('<td>' + status + '</td>')
+                        let tdDownload = $('<td><button class="btn btn-default waves-effect waves-light" id="btnDownload">Download</button></td>')
+                        let tdRevoke = $('<td><button class="btn btn-default waves-effect waves-light" id="btnRevoke">Revoke</button></td>')
 
 
-	tdDownload.click(download(cert, keyStorePassword))
-	tdRevoke.click(revoke(cert, keyStorePassword))
+                        tdDownload.click(download(cert))
+                        tdRevoke.click(revoke(cert))
 
+                        tr.append(tdAlias).append(tdSubjectCN).append(tdIssuerCN).append(tdType).append(tdStatus).append(tdDownload)
+                        if(status==="GOOD"){
+                            tr.append(tdRevoke)
+                        }
 
-	tr.append(tdAlias).append(tdSubjectCN).append(tdIssuerCN).append(tdType).append(tdStatus).append(tdDownload).append(tdRevoke)
-	$('#certs tbody').append(tr);
+                        $('#certs tbody').append(tr);
 
-	}
-
-                		})
+                    }
+            })
 
 }
 
-function download(cert, keyStorePassword){
+function download(cert){
 
     return function(){
         let issuerDataDTO = {"commonName":cert.issuerData.commonName}
         let subjectDataDTO = {"commonName":cert.subjectData.commonName}
-        let certDto = JSON.stringify({"issuerData":issuerDataDTO, "subjectData":subjectDataDTO, "keyStorePassword":keyStorePassword,
-                                      "type":cert.type, "alias":cert.alias, "serialNumber":cert.serialNumber})
+        let certDto = JSON.stringify({"issuerData":issuerDataDTO, "subjectData":subjectDataDTO, "type":cert.type, "alias":cert.alias, "serialNumber":cert.serialNumber})
 
     		console.log(certDto)
     		$.ajax({
@@ -114,11 +92,9 @@ function download(cert, keyStorePassword){
 
                           if(data.status == "200")
                            {
-                                alert('hoce')
+                                alert('Download successful')
                            }
-                           else {
-                                alert('nece')
-                           }
+
                     }
 
     		})
@@ -126,41 +102,30 @@ function download(cert, keyStorePassword){
 }
 
 
-function revoke(cert, keyStorePassword){
+function revoke(cert){
 
-return function(){
-
-        keyPassword ="a"
-
-
-
+    return function(){
         let issuerDataDTO = {"commonName":cert.issuerData.commonName}
-                let subjectDataDTO = {"commonName":cert.subjectData.commonName}
-                let certDto = JSON.stringify({"issuerData":issuerDataDTO, "subjectData":subjectDataDTO, "keyStorePassword":keyStorePassword,
-                                              "type":cert.type, "alias":cert.alias, "keyPassword":keyPassword, "serialNumber":cert.serialNumber})
+        let subjectDataDTO = {"commonName":cert.subjectData.commonName}
+        let certDto = JSON.stringify({"issuerData":issuerDataDTO, "subjectData":subjectDataDTO, "type":cert.type, "alias":cert.alias, "serialNumber":cert.serialNumber})
 
-            		console.log(certDto)
-            		$.ajax({
-            			type: 'POST',
-            			url:'/api/revocation/revoke',
-            			data: certDto,
-            			dataType : "json",
-            			contentType : "application/json; charset=utf-8",
-            			complete: function(data)
-                            {
-                                 console.log(data.status)
-                                 console.log(data.responseText)
-                                  if(data.status == "200")
-                                   {
-                                        alert('hoce')
-                                   }
-                                   else {
-                                        alert('nece')
-                                   }
-                            }
+            console.log(certDto)
+            $.ajax({
+                type: 'POST',
+                url:'/api/revocation/revoke',
+                data: certDto,
+                dataType : "json",
+                contentType : "application/json; charset=utf-8",
+                complete: function(data)
+                    {
+                      if(data.status == "200")
+                       {
+                            window.location.href = 'readCert.html'
+                       }
 
-            		})
+                    }
 
+            })
 
 }
 

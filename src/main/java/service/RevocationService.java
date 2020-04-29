@@ -19,9 +19,9 @@ public class RevocationService {
 
                 List<CertificateSummary> issuedCerts = certificateSummaryRepository.findByIssuerAlias(certSum.getAlias());
 
-                System.out.println(issuedCerts.size());
-
                 for(CertificateSummary cert : issuedCerts){
+                        if(cert.isRevoked()) break;
+
                         certSum = certificateSummaryRepository.findByAlias(cert.getAlias());
                         certSum.setRevoked(true);
                         certSum.setRevocationDate(Calendar.getInstance().getTime());

@@ -7,10 +7,9 @@ import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 import org.bouncycastle.cert.ocsp.OCSPException;
 import org.bouncycastle.cert.ocsp.OCSPReq;
 import org.bouncycastle.cert.ocsp.OCSPResp;
-import org.bouncycastle.operator.DigestCalculatorProvider;
 import org.bouncycastle.operator.OperatorCreationException;
-import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +21,6 @@ import repository.CertificateSummaryRepository;
 import service.KeyStoreService;
 import service.OCSPService;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.*;
 import java.security.cert.Certificate;
@@ -45,27 +42,23 @@ public class OCSPController {
     @Autowired
     private CertificateSummaryRepository certificateSummaryRepository;
 
+    @Autowired
+    private Environment env;
 
 
     @PostMapping(value = "/ocspResponse")
-    public ResponseEntity<String> getOCSPResponse(@RequestBody  CertificateDTO dto) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, OCSPException, OperatorCreationException, UnrecoverableKeyException {
+    public ResponseEntity<String> getOCSPResponse(@RequestBody CertificateDTO dto) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, OCSPException, OperatorCreationException, UnrecoverableKeyException {
 
         CertificateSummary certSum = certificateSummaryRepository.findByAlias(dto.getAlias());
 
         List<CertificateSummary> rootList = certificateSummaryRepository.findByIsRootTrue();
         CertificateSummary issuerCertSum = rootList.get(0);
 
-        char[] keyStorePasswordArray = dto.getKeyStorePassword().toCharArray();
         String keyStorePath = "keystores/root.p12";
-        KeyStore keyStore = KeyStore.getInstance("PKCS12");
-        try {
-            keyStore.load(new FileInputStream(keyStorePath), keyStorePasswordArray);
-        } catch (IOException | NoSuchAlgorithmException | CertificateException e) {
-            return null;
-        }
+        KeyStore keyStore = keyStoreService.loadKeystore(keyStorePath);
 
         Certificate issuerCert = keyStore.getCertificate(issuerCertSum.getAlias());
-        Certificate[] chain = keyStoreService.getCertificateChain(dto.getKeyStorePassword(), issuerCertSum.getAlias());
+        Certificate[] chain = keyStoreService.getCertificateChain(issuerCertSum.getAlias());
 
         X509CertificateHolder[] chainHolder = new X509CertificateHolder[chain.length];
         for (int i = 0; i < chain.length; i++) {
@@ -74,13 +67,14 @@ public class OCSPController {
 
         JcaX509CertificateHolder issuerCertHolder = new JcaX509CertificateHolder((X509Certificate) issuerCert);
 
-        PrivateKey issuerPrivateKey = (PrivateKey) keyStore.getKey(issuerCertSum.getAlias(), dto.getKeyPassword().toCharArray());
+        String keyPass = env.getProperty("spring.keystore.keyPassword");
+        char[] keyPasswordArray = keyPass.toCharArray();
+        PrivateKey issuerPrivateKey = (PrivateKey) keyStore.getKey(issuerCertSum.getAlias(), keyPasswordArray);
 
         OCSPReq ocspReq = ocspService.generateOCSPRequest(issuerCertHolder, certSum.getSerialNumber());
         OCSPResp ocspResp = ocspService.doProcessOCSPRequest(ocspReq, chainHolder[0], issuerCertHolder, issuerPrivateKey, chainHolder);
 
         String status = (ocspResp == null) ? null : ocspService.doProcessOCSPResponse(ocspResp);
-        System.out.println(status);
         if (status != null) {
             return new ResponseEntity<>(status, HttpStatus.OK);
         } else {

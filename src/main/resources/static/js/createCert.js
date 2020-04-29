@@ -8,11 +8,11 @@ window.onload = function () {
         $('#btnNext').hide()
         $('#afterNext').show()
 
-        let password = $('#keyStorePassword').val()
+
 
         $.ajax({
         		type: 'GET',
-        		url: 'api/keyStore/getAliases/'+password,
+        		url: 'api/keyStore/getAliases',
         		contentType: "application/json",
         		complete: function(data)
         		{
@@ -40,16 +40,11 @@ window.onload = function () {
     		let organisationName = $('#organisationName').val()
     		let organisationUnitName = $('#organisationUnitName').val()
     		let email = $('#email').val()
-    		let keyStorePassword = $('#keyStorePassword').val()
-    		let keyPassword = $('#keyPassword').val()
     		let alias = $('#alias').val()
     		let template = $('#template option:selected').val()
             let isCA = false;
-            let keyPasswordIssuer = $("#keyPasswordIssuer").val()
             let keyUsageDTO
             let extendedKeyUsageDTO
-
-
 
 
             if(template ==="Server Auth"){
@@ -85,7 +80,7 @@ window.onload = function () {
 
             $.ajax({
                 type: 'GET',
-                url: 'api/keyStore/getIssuerData/'+issuerAlias+'/'+keyStorePassword+'/'+keyPasswordIssuer,
+                url: 'api/keyStore/getIssuerData/'+issuerAlias,
                 contentType: "application/json",
                 complete: function(data)
                 {
@@ -101,8 +96,9 @@ window.onload = function () {
                                                     "countryName":countryName,"organisationName":organisationName, "organisationUnitName":organisationUnitName,"givenName":"",
                                                     "surname":"", "uid":"", "serialNumber":"","email":email}
 
-                    let certDto = JSON.stringify({"issuerData":issuerDataDTO, "subjectData":subjectDataDTO, "keyStorePassword":keyStorePassword, "keyPassword": keyPassword,
-                                                    "basicConstrains":isCA, "extendedKeyUsageDTO":extendedKeyUsageDTO, "keyUsageDTO":keyUsageDTO, "alias":alias, "issuerAlias":issuerAlias,
+                    let certDto = JSON.stringify({"issuerData":issuerDataDTO, "subjectData":subjectDataDTO,
+                                                    "basicConstrains":isCA, "extendedKeyUsageDTO":extendedKeyUsageDTO,
+                                                    "keyUsageDTO":keyUsageDTO, "alias":alias, "issuerAlias":issuerAlias,
                                                     "notAfter": issuerData.notAfter})
 
 
