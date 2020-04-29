@@ -66,7 +66,7 @@ public class OCSPController {
         }
 
         JcaX509CertificateHolder issuerCertHolder = new JcaX509CertificateHolder((X509Certificate) issuerCert);
-        
+
         String keyPass = env.getProperty("spring.keystore.keyPassword");
         char[] keyPasswordArray = keyPass.toCharArray();
         PrivateKey issuerPrivateKey = (PrivateKey) keyStore.getKey(issuerCertSum.getAlias(), keyPasswordArray);
@@ -75,7 +75,6 @@ public class OCSPController {
         OCSPResp ocspResp = ocspService.doProcessOCSPRequest(ocspReq, chainHolder[0], issuerCertHolder, issuerPrivateKey, chainHolder);
 
         String status = (ocspResp == null) ? null : ocspService.doProcessOCSPResponse(ocspResp);
-        System.out.println(status);
         if (status != null) {
             return new ResponseEntity<>(status, HttpStatus.OK);
         } else {

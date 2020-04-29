@@ -16,12 +16,10 @@ public class ValidationService {
     public boolean validateCertificate(Certificate certificate, PublicKey publicKey) {
 
         if(!verifySignature(certificate, publicKey)){
-            System.out.println("NE VALJA POTPIS");
             return false;
         }
 
         if(!validateDate(certificate)){
-            System.out.println("NE VALJA DATUM");
             return false;
         }
 

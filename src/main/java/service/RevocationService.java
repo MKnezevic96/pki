@@ -19,9 +19,6 @@ public class RevocationService {
 
                 List<CertificateSummary> issuedCerts = certificateSummaryRepository.findByIssuerAlias(certSum.getAlias());
 
-                System.out.println(issuedCerts.size());
-
-
                 for(CertificateSummary cert : issuedCerts){
                         if(cert.isRevoked()) break;
 

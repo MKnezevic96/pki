@@ -161,7 +161,7 @@ public class CertificateService {
         return issuerData;
     }
 
-    //TODO podeliti na user vs system
+    //TODO podeliti na server, client, subsystem
     private SubjectData generateSubjectData(CertificateDTO dto) {
         try {
 
