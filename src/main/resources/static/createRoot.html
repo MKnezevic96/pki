@@ -51,38 +51,54 @@
                     <div class="card-body">
                         <h3 class="text-center default-text py-3"><i class="fa fa-user"></i> Subject Data:</h3>
                         <!--Body-->
+                        <form id="contact" >
                         <div class="md-form">
-                            <input type="text" id="commonName" class="form-control">
+                            <input type="text" id="commonName" name="commonName" required="required" class="form-control">
                             <label for="commonName">Common Name</label>
+                            <span class="error">This field is required</span>
                         </div>
                         <div class="md-form">
-                            <input type="text" id="countryName" class="form-control">
+                            <input type="text" id="countryName" name="countryName" required="required" class="form-control">
                             <label for="countryName">CountryName</label>
+                            <span class="error">This field is required</span>
+
                         </div>
                         <div class="md-form">
-                            <input type="text" id="stateName" class="form-control">
+                            <input type="text" id="stateName" name="stateName" required="required" class="form-control">
                             <label for="stateName">State name</label>
+                            <span class="error">This field is required</span>
+
                         </div>
                         <div class="md-form">
-                            <input type="text" id="localityName" class="form-control">
+                            <input type="text" id="localityName" name="localityName" required="required" class="form-control">
                             <label for="localityName">Locality Name</label>
+                            <span class="error">This field is required</span>
+
                         </div>
                         <div class="md-form">
-                            <input type="text" id="organisationName" class="form-control">
+                            <input type="text" id="organisationName" name="organisationName" required="required"class="form-control">
                             <label for="organisationName">Organisation name</label>
+                            <span class="error">This field is required</span>
+
                         </div>
                         <div class="md-form">
-                            <input type="text" id="organisationUnitName" class="form-control">
+                            <input type="text" id="organisationUnitName" name="organisationUnitName" class="form-control">
                             <label for="organisationUnitName">Organisation unit name</label>
+                            <span class="error">This field is required</span>
+
                         </div>
                         <div class="md-form">
-                            <input type="text" id="email" class="form-control">
+                            <input type="text" id="email" name="email" required="required" class="form-control">
                             <label for="email">Email</label>
+                            <span class="error">This field is required</span>
+
                         </div>
                         <div class="md-form">
                             <div class="md-form">
-                                <input type="text" id="alias" class="form-control">
+                                <input type="text" id="alias" name="alias" required="required" class="form-control">
                                 <label for="alias">Alias</label>
+                                <span class="error">This field is required</span>
+
                             </div>
                                 <div class="text-center">
                                     <button class="btn btn-default waves-effect waves-light" id="btnCreate">Create and sign</button>
@@ -90,6 +106,8 @@
                             <div>
                             </div>
                         </div>
+                        </form>
+
                     </div>
                     <!-- Grid column -->
                 </div>
