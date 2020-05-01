@@ -8,6 +8,7 @@ import model.IssuerData;
 import model.SubjectData;
 
 
+import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.*;
@@ -15,15 +16,18 @@ import org.bouncycastle.asn1.x509.Extension;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
 import org.bouncycastle.jce.X509KeyUsage;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.*;
@@ -41,6 +45,8 @@ import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import repository.CertificateSummaryRepository;
 
+import javax.net.ssl.X509ExtendedKeyManager;
+
 @Service
 public class CertificateService {
 
@@ -55,10 +61,8 @@ public class CertificateService {
     private CertificateSummaryRepository certificateSummaryRepository;
 
 
-
     public void generateCertificate(CertificateDTO dto) {
         try {
-
             JcaContentSignerBuilder builder = new JcaContentSignerBuilder("SHA256withECDSA");
             builder = builder.setProvider("BC");
 
@@ -120,7 +124,7 @@ public class CertificateService {
 
             X509Certificate cert = certConverter.getCertificate(certHolder);
 
-            Certificate[] chain = keyStoreService.getCertificateChain(dto.getIssuerAlias());
+            Certificate[] chain = keyStoreService.getCertificateChain(dto.getKeyStorePassword(), dto.getIssuerAlias());
             if(validationService.validateCertificateChain(chain)){
 
                 CertificateSummary certificateSummary = new CertificateSummary();
@@ -129,11 +133,29 @@ public class CertificateService {
                 certificateSummary.setSerialNumber(new BigInteger(subjectData.getSerialNumber()).toString());
                 certificateSummaryRepository.save(certificateSummary);
 
-                keyStoreService.saveCertificate(dto.getAlias(), subjectData.getPrivateKey(), cert);
+                keyStoreService.saveCertificate(dto.getKeyPassword(), dto.getAlias(),  dto.getKeyStorePassword(), subjectData.getPrivateKey(), cert);
                 System.out.println("-------------------------------------------"+cert+"-------------------------------");
             }
 
-        } catch (IllegalArgumentException | IllegalStateException | OperatorCreationException | CertificateException | IOException | NoSuchAlgorithmException | KeyStoreException | NoSuchProviderException e) {
+        } catch (CertificateEncodingException e) {
+            e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        } catch (OperatorCreationException e) {
+            e.printStackTrace();
+        } catch (CertificateException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (KeyStoreException e) {
+            e.printStackTrace();
+        } catch (NoSuchProviderException e) {
+            e.printStackTrace();
+        } catch (UnrecoverableKeyException e) {
             e.printStackTrace();
         }
 
@@ -144,24 +166,27 @@ public class CertificateService {
     private IssuerData generateIssuerDataRoot(PrivateKey issuerKey, PublicKey publicKeyIssuer, DataDTO data) {
         X500NameBuilder builder = new X500NameBuilder(BCStyle.INSTANCE);
         builder.addRDN(BCStyle.CN, data.getCommonName());
+//        builder.addRDN(BCStyle.SURNAME, data.getSurname());
+//        builder.addRDN(BCStyle.GIVENNAME, data.getGivenName());
         builder.addRDN(BCStyle.O, data.getOrganisationName());
         builder.addRDN(BCStyle.OU, data.getOrganisationUnitName());
         builder.addRDN(BCStyle.C, data.getCountryName());
         builder.addRDN(BCStyle.E, data.getEmail());
         builder.addRDN(BCStyle.L, data.getLocalityName());
+//        builder.addRDN(BCStyle.UID, data.getUid());
 
         return new IssuerData(builder.build(), issuerKey, publicKeyIssuer);
     }
 
 
-    private IssuerData generateIssuerData(CertificateDTO dto) {
+    private IssuerData generateIssuerData(CertificateDTO dto) throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, NoSuchProviderException, IOException {
 
-        IssuerData issuerData = keyStoreService.readIssuerDataFromStore(dto.getIssuerAlias());
+        IssuerData issuerData = keyStoreService.readIssuerDataFromStore(dto.getIssuerAlias(), dto.getKeyStorePassword(), dto.getKeyPassword());
 
         return issuerData;
     }
 
-    //TODO podeliti na server, client, subsystem
+    //TODO podeliti na user vs system
     private SubjectData generateSubjectData(CertificateDTO dto) {
         try {
 
@@ -172,11 +197,15 @@ public class CertificateService {
 
             X500NameBuilder builder = new X500NameBuilder(BCStyle.INSTANCE);
             builder.addRDN(BCStyle.CN, data.getCommonName());
+  //          builder.addRDN(BCStyle.SURNAME, data.getSurname());
+  //          builder.addRDN(BCStyle.GIVENNAME, data.getGivenName());
             builder.addRDN(BCStyle.O, data.getOrganisationName());
             builder.addRDN(BCStyle.OU, data.getOrganisationUnitName());
             builder.addRDN(BCStyle.C, data.getCountryName());
             builder.addRDN(BCStyle.E, data.getEmail());
             builder.addRDN(BCStyle.L, data.getLocalityName());
+//            builder.addRDN(BCStyle.UID, data.getUid());
+
             SimpleDateFormat sdf = new SimpleDateFormat("EE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
             Calendar cal = Calendar.getInstance();
 
@@ -213,14 +242,18 @@ public class CertificateService {
             ecsp = new ECGenParameterSpec("secp256k1");
             keyGen.initialize(ecsp);
             return keyGen.generateKeyPair();
-        } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException e) {
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (NoSuchProviderException e) {
+            e.printStackTrace();
+        } catch (InvalidAlgorithmParameterException e) {
             e.printStackTrace();
         }
         return null;
     }
 
 
-
+    //TODO proveriti duzinu trajanja
     public void generateSelfSignedX509Certificate(CertificateDTO dto) throws CertificateException, IllegalStateException,
             OperatorCreationException, NoSuchAlgorithmException, KeyStoreException, NoSuchProviderException, IOException, ParseException {
 
@@ -241,8 +274,45 @@ public class CertificateService {
                 subjectData.getX500name(),
                 subjectData.getPublicKey());
 
+        if(dto.getKeyUsageDTO().isKeyUsage()){
+            X509KeyUsage keyuse = new X509KeyUsage(
+                    dto.getKeyUsageDTO().isDigitalSignature() |
+                            dto.getKeyUsageDTO().isNonRepudiation()   |
+                            dto.getKeyUsageDTO().isKeyEncipherment()  |
+                            dto.getKeyUsageDTO().isDataEncipherment() |
+                            dto.getKeyUsageDTO().isKeyAgreement() |
+                            dto.getKeyUsageDTO().isKeyCertSign() |
+                            dto.getKeyUsageDTO().iscRLSign() |
+                            dto.getKeyUsageDTO().isEncihperOnly() |
+                            dto.getKeyUsageDTO().isDecipherOnly()
+            );
+
+            certGen.addExtension(Extension.keyUsage, true, keyuse);
+
+        }
         certGen.addExtension(Extension.basicConstraints, true, new BasicConstraints(true));
 
+
+        ExtendedKeyUsageDTO ekuDTO = dto.getExtendedKeyUsageDTO();
+        if(ekuDTO.isServerAuth().equals("1.3.6.1.5.5.7.3.1"))
+            System.out.println("CertificateService-----------> server");
+        if(ekuDTO.isClientAuth().equals("1.3.6.1.5.5.7.3.2"))
+            System.out.println("CertificateService-----------> client");
+        if(ekuDTO.isCodeSigning().equals("1.3.6.1.5.5.7.3.1.3"))
+            System.out.println("CertificateService-----------> code");
+        if(ekuDTO.isEmailProtection().equals("1.3.6.1.5.5.7.3.4"))
+            System.out.println("CertificateService-----------> email");
+        if(ekuDTO.isEmailProtection().equals("1.3.6.1.5.5.7.3.8"))
+            System.out.println("CertificateService-----------> time");
+        if(ekuDTO.isEmailProtection().equals("1.3.6.1.5.5.7.3.9"))
+            System.out.println("CertificateService-----------> ocsp");
+
+
+        if(dto.getExtendedKeyUsageDTO().isExtendedKeyUsage()){
+            Collection<ASN1ObjectIdentifier> usages = getOids(dto.getExtendedKeyUsageDTO());
+            System.out.println("usages.size()"+usages.size());
+            certGen.addExtension(Extension.extendedKeyUsage, true, createExtendedUsage(usages));
+        }
 
 
         certGen.addExtension(Extension.authorityKeyIdentifier, false,
@@ -265,11 +335,11 @@ public class CertificateService {
         certificateSummaryRepository.save(certificateSummary);
 
         System.out.println("-------------------------------------------"+cert+"-------------------------------");
-        keyStoreService.saveCertificate(dto.getAlias(), subjectData.getPrivateKey(), cert);
+        keyStoreService.saveCertificate(dto.getKeyPassword(), dto.getAlias(),  dto.getKeyStorePassword(), subjectData.getPrivateKey(), cert);
 
     }
 
-    private void addBouncyCastleAsSecurityProvider() {
+    public void addBouncyCastleAsSecurityProvider() {
         Security.addProvider(new BouncyCastleProvider());
     }
 
@@ -286,7 +356,7 @@ public class CertificateService {
             kps[idx++] = KeyPurposeId.getInstance(oid);
         }
 
-        return new ExtendedKeyUsage(kps[0]);
+        return new ExtendedKeyUsage(kps);
     }
 
 

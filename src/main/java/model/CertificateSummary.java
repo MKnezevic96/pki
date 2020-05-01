@@ -2,6 +2,7 @@ package model;
 
 
 import javax.persistence.*;
+import java.math.BigInteger;
 import java.util.Date;
 
 @Entity(name = "certSummary")
@@ -10,7 +11,7 @@ import java.util.Date;
 public class CertificateSummary {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(name = "alias", nullable = false, unique = true)
