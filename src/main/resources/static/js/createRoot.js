@@ -1,7 +1,60 @@
-window.onload = function () {
+$(document).ready(function() {
 
-	$('#btnCreate').click(function(e){
-    		e.preventDefault()
+
+ $('#btnCreate').click(function(e){
+/*
+ $("#contact").validate({
+    rules: {
+
+    commonName: {
+            required: true,
+            lettersonly: true
+          },
+    countryName: {
+             required: true,
+             lettersonly: true
+           },
+    stateName: {
+             required: true,
+             lettersonly: true
+           },
+    localityName: {
+                  required: true,
+                  lettersonly: true
+                },
+    organisationName: {
+                   required: true,
+                   lettersonly: true
+                 },
+    organisationUnitName: {
+                    required: true,
+                    lettersonly: true
+                  },
+    email: {
+        required: true,
+        email: true,
+        //remote: "http://localhost:3000/inputValidator"
+      },
+
+    alias: {
+        required: true,
+        nowhitespace: true,
+      }
+   }
+  })
+
+
+*/
+
+
+    	//	e.preventDefault()
+
+
+
+
+
+
+
 
             let commonName = $('#commonName').val()
     		let localityName = $('#localityName').val()
@@ -15,7 +68,6 @@ window.onload = function () {
     		let alias = $('#alias').val()
             let isCA = false;
 
-
     		let issuerDataDTO = {"commonName":commonName,"localityName":localityName,"stateName":stateName,
     		"countryName":countryName,"organisationName":organisationName, "organisationUnitName":organisationUnitName,"givenName":"",
     		"surname":"", "uid":"", "serialNumber":"","email":email}
@@ -27,7 +79,13 @@ window.onload = function () {
             let certDto = JSON.stringify({"issuerData":issuerDataDTO, "subjectData":subjectDataDTO, "keyStorePassword":keyStorePassword, "keyPassword": keyPassword,
                                             "basicConstrains":isCA, "alias":alias})
 
-    		console.log(certDto)
+    		console.log(certDto)     // samo provera
+
+
+
+
+
+
     		$.ajax({
     			type: 'POST',
     			url:'/api/certificates/generateSelfSigned',
@@ -40,19 +98,19 @@ window.onload = function () {
 
                                   if(data.status == "200")
                                    {
-                                        alert('hoce')
+                                        alert('Root certificate made successfully. ')
                                     	//window.location.href = "centreAdminPage.html"
                                    }
                                    else {
-                                        alert('nece')
+                                        e.preventDefault();
+                                        alert('Cannot make root certificate. ')
                                    }
                             }
+                   })
 
-    		})
 
     	})
+})
 
 
-
-}
 

@@ -7,9 +7,10 @@
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <!------ Include the above in your HEAD tag ---------->
-
-    <script src="js/createRoot.js"></script>
     <link rel="stylesheet" href="css/createCert.css">
+    <link rel="shortcut icon" href="#">
+
+
     <!------ Include the above in your HEAD tag ---------->
     <link href="https://fonts.googleapis.com/css?family=Libre+Franklin" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
@@ -20,27 +21,42 @@
             crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 
 
-</head>
-<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.min.js"></script>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#"></a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-        <div class="navbar-nav">
-            <a class="nav-item nav-link active" href="certificates.html">Home </a>
-            <a class="nav-item nav-link active" href="createRoot.html">Create root certificate <span class="sr-only">(current)</span></a>
-            <a class="nav-item nav-link" href="createCert.html">Create certificate</a>
-            <a class="nav-item nav-link" href="readCert.html">Certificate list</a>
-        </div>
-    </div>
-</nav>
+    <!------ ovde je bila skripta ---------->
+    <script>
+        $("input[type='text']").on("keyup", function(){
+    if($(this).val() != "" ){
+        $("input[type='submit']").removeAttr("disabled");
+    } else {
+        $("input[type='submit']").attr("disabled", "disabled");
+    }
+});
 
-<main>
 
-    <!--MDB Forms-->
+    </script>
+
+   </head>
+   <body>
+
+   <nav class="navbar navbar-expand-lg navbar-light bg-light">
+       <a class="navbar-brand" href="#"></a>
+       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+           <span class="navbar-toggler-icon"></span>
+       </button>
+       <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+           <div class="navbar-nav">
+               <a class="nav-item nav-link active" href="certificates.html">Home </a>
+               <a class="nav-item nav-link active" href="createRoot.html">Create root certificate <span class="sr-only">(current)</span></a>
+               <a class="nav-item nav-link" href="createCert.html">Create certificate</a>
+               <a class="nav-item nav-link" href="readCert.html">Certificate list</a>
+           </div>
+       </div>
+   </nav>
+
+   <main>
+
+       <!--MDB Forms-->
     <div class="container mt-4">
 
         <div class="text-center darken-grey-text mb-4">
@@ -51,45 +67,64 @@
                     <div class="card-body">
                         <h3 class="text-center default-text py-3"><i class="fa fa-user"></i> Subject Data:</h3>
                         <!--Body-->
-                        <div class="md-form">
-                            <input type="text" id="commonName" class="form-control">
+                        <form id="contact" name="contact" >
+                        <div class="md-form " >
+                            <input type="text" id="commonName" name="commonName"  class="form-control" required >
                             <label for="commonName">Common Name</label>
+                            <span class="error_form" id="name_error_message"></span>
                         </div>
-                        <div class="md-form">
-                            <input type="text" id="countryName" class="form-control">
+                        <div class="md-form ">
+                            <input type="text" id="countryName" name="countryName"  class="form-control" required >
                             <label for="countryName">CountryName</label>
+                            <span class="error_form" id="cname_error_message"></span>
+
                         </div>
-                        <div class="md-form">
-                            <input type="text" id="stateName" class="form-control">
+                        <div class="md-form ">
+                            <input type="text" id="stateName" name="stateName"  class="form-control" required >
                             <label for="stateName">State name</label>
+                            <span class="error_form" id="sname_error_message"></span>
+
                         </div>
-                        <div class="md-form">
-                            <input type="text" id="localityName" class="form-control">
+                        <div class="md-form ">
+                            <input type="text" id="localityName" name="localityName"  class="form-control" required >
                             <label for="localityName">Locality Name</label>
+                            <span class="error_form" id="lname_error_message"></span>
+
                         </div>
-                        <div class="md-form">
-                            <input type="text" id="organisationName" class="form-control">
+                        <div class="md-form ">
+                            <input type="text" id="organisationName" name="organisationName"  class="form-control" required >
                             <label for="organisationName">Organisation name</label>
+                            <span class="error_form" id="oname_error_message"></span>
+
                         </div>
-                        <div class="md-form">
-                            <input type="text" id="organisationUnitName" class="form-control">
+                        <div class="md-form ">
+                            <input type="text" id="organisationUnitName"  name="organisationUnitName" class="form-control" required >
                             <label for="organisationUnitName">Organisation unit name</label>
+                            <span class="error_form" id="ouname_error_message"></span>
+
                         </div>
-                        <div class="md-form">
-                            <input type="text" id="email" class="form-control">
+                        <div class="md-form ">
+                            <input type="text" id="email" name="email"  class="form-control" required >
                             <label for="email">Email</label>
+                            <span class="error_form" id="email_error_message"></span>
+
                         </div>
-                        <div class="md-form">
+                        <div class="md-form ">
                             <div class="md-form">
-                                <input type="text" id="alias" class="form-control">
+                                <input type="text" id="alias" name="alias"  class="form-control" required onkeyup="if(this.textLength != 0) {btnCreate.disabled = false} else {btnCreate.disabled = true}">
                                 <label for="alias">Alias</label>
+                                <span class="error">This field is required</span>
+                                <span class="error_form" id="alias_error_message"></span>
+
                             </div>
-                                <div class="text-center">
-                                    <button class="btn btn-default waves-effect waves-light" id="btnCreate">Create and sign</button>
+                                <div class="text-center actions">
+                                    <button class="btn btn-default waves-effect waves-light" id="btnCreate" type="submit"  disabled="disabled">Create and sign</button>
                                 </div>
                             <div>
                             </div>
                         </div>
+                        </form>
+
                     </div>
                     <!-- Grid column -->
                 </div>
@@ -107,7 +142,13 @@
 </main>
 
 <!-- MDB core JavaScript -->
+
+
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.4.1/js/mdb.min.js"></script>
+
+
+
+<script src="js/createRoot.js"></script>
 
 
 </body>
