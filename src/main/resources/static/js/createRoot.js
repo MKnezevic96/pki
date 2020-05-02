@@ -1,73 +1,60 @@
-window.onload = function () {
+$(document).ready(function() {
 
 
-    $(document).ready(function() {
+ $('#btnCreate').click(function(e){
+/*
+ $("#contact").validate({
+    rules: {
 
-// uneto ime
-     $('#commonName').on('input', function() {
-                var input=$(this);
-                var is_name=input.val();
-                if(is_name){input.removeClass("invalid").addClass("valid");}
-                else{input.removeClass("valid").addClass("invalid");}
-               });
-// uneto localityName
-     $('#localityName').on('input', function() {
-                var input=$(this);
-                var l_name=input.val();
-                if(l_name){input.removeClass("invalid").addClass("valid");}
-                else{input.removeClass("valid").addClass("invalid");}
-               });
-// uneto stateName
-     $('#stateName').on('input', function() {
-                var input=$(this);
-                var s_name=input.val();
-                if(s_name){input.removeClass("invalid").addClass("valid");}
-                else{input.removeClass("valid").addClass("invalid");}
-               });
-// uneto countryName
-     $('#countryName').on('input', function() {
-                var input=$(this);
-                var c_name=input.val();
-                if(c_name){input.removeClass("invalid").addClass("valid");}
-                else{input.removeClass("valid").addClass("invalid");}
-               });
-// uneto organisationName
-     $('#organisationName').on('input', function() {
-                var input=$(this);
-                var o_name=input.val();
-                if(o_name){input.removeClass("invalid").addClass("valid");}
-                else{input.removeClass("valid").addClass("invalid");}
-               });
+    commonName: {
+            required: true,
+            lettersonly: true
+          },
+    countryName: {
+             required: true,
+             lettersonly: true
+           },
+    stateName: {
+             required: true,
+             lettersonly: true
+           },
+    localityName: {
+                  required: true,
+                  lettersonly: true
+                },
+    organisationName: {
+                   required: true,
+                   lettersonly: true
+                 },
+    organisationUnitName: {
+                    required: true,
+                    lettersonly: true
+                  },
+    email: {
+        required: true,
+        email: true,
+        //remote: "http://localhost:3000/inputValidator"
+      },
 
- // uneto organisationUnitName
-      $('#organisationUnitName').on('input', function() {
-                 var input=$(this);
-                 var ou_name=input.val();
-                 if(ou_name){input.removeClass("invalid").addClass("valid");}
-                 else{input.removeClass("valid").addClass("invalid");}
-                });
-   // uneto email
-        $('#email').on('input', function() {
-                  var input=$(this);
-                  	var re =  /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-                  	var is_email=re.test(input.val());
-                  	if(is_email){input.removeClass("invalid").addClass("valid");}
-                  	else{input.removeClass("valid").addClass("invalid");}
-                  });
-     // uneto alias
-          $('#countryName').on('input', function() {
-                     var input=$(this);
-                     var ali=input.val();
-                     if(ali){input.removeClass("invalid").addClass("valid");}
-                     else{input.removeClass("valid").addClass("invalid");}
-                    });
+    alias: {
+        required: true,
+        nowhitespace: true,
+      }
+   }
+  })
 
 
-    });
+*/
 
 
-	$('#btnCreate').click(function(e){
-    		e.preventDefault()
+    	//	e.preventDefault()
+
+
+
+
+
+
+
 
             let commonName = $('#commonName').val()
     		let localityName = $('#localityName').val()
@@ -81,52 +68,6 @@ window.onload = function () {
     		let alias = $('#alias').val()
             let isCA = false;
 
-/* verifikacija
-
-            var error_free=true;
-
-  var valid=commonName.hasClass("valid");
-  		var error_element=$("span", commonName.parent());
-  		if (!valid){error_element.removeClass("error").addClass("error_show"); error_free=false;}
-  		else{error_element.removeClass("error_show").addClass("error");}
-
-var valid=localityName.hasClass("valid");
-  		var error_element=$("span", localityName.parent());
-  		if (!valid){error_element.removeClass("error").addClass("error_show"); error_free=false;}
-  		else{error_element.removeClass("error_show").addClass("error");}
-
- var valid=stateName.hasClass("valid");
-      	var error_element=$("span", stateName.parent());
-      	if (!valid){error_element.removeClass("error").addClass("error_show"); error_free=false;}
-      	else{error_element.removeClass("error_show").addClass("error");}
-
- var valid=countryName.hasClass("valid");
-   		var error_element=$("span", countryName.parent());
-   		if (!valid){error_element.removeClass("error").addClass("error_show"); error_free=false;}
-   		else{error_element.removeClass("error_show").addClass("error");}
-
- var valid=organisationName.hasClass("valid");
-   		var error_element=$("span", organisationName.parent());
-   		if (!valid){error_element.removeClass("error").addClass("error_show"); error_free=false;}
-   		else{error_element.removeClass("error_show").addClass("error");}
-
-var valid=organisationUnitName.hasClass("valid");
-  		var error_element=$("span", organisationUnitName.parent());
-  		if (!valid){error_element.removeClass("error").addClass("error_show"); error_free=false;}
-  		else{error_element.removeClass("error_show").addClass("error");}
-
-var valid=email.hasClass("valid");
-  		var error_element=$("span", email.parent());
-  		if (!valid){error_element.removeClass("error").addClass("error_show"); error_free=false;}
-  		else{error_element.removeClass("error_show").addClass("error");}
-
-var valid=alias.hasClass("valid");
-  		var error_element=$("span", alias.parent());
-  		if (!valid){error_element.removeClass("error").addClass("error_show"); error_free=false;}
-  		else{error_element.removeClass("error_show").addClass("error");}
-
-
-*/
     		let issuerDataDTO = {"commonName":commonName,"localityName":localityName,"stateName":stateName,
     		"countryName":countryName,"organisationName":organisationName, "organisationUnitName":organisationUnitName,"givenName":"",
     		"surname":"", "uid":"", "serialNumber":"","email":email}
@@ -140,15 +81,8 @@ var valid=alias.hasClass("valid");
 
     		console.log(certDto)     // samo provera
 
-    			var form_data=$("#contact").serializeArray();
-            	var error_free=true;
-            	for (var input in form_data){
-            		var element=$(form_data[input]['name']);
-            		var valid=element.hasClass("valid");
-            		var error_element=$("span", element.parent());
-            		if (!valid){error_element.removeClass("error").addClass("error_show"); error_free=false;}
-            		else{error_element.removeClass("error_show").addClass("error");}
-            	}
+
+
 
 
 
@@ -162,21 +96,21 @@ var valid=alias.hasClass("valid");
                             {
                                  console.log(data.status)
 
-                                  if(data.status == "200" && error_free)
+                                  if(data.status == "200")
                                    {
                                         alert('Root certificate made successfully. ')
                                     	//window.location.href = "centreAdminPage.html"
                                    }
                                    else {
+                                        e.preventDefault();
                                         alert('Cannot make root certificate. ')
                                    }
                             }
+                   })
 
-    		})
 
     	})
+})
 
 
-
-}
 
