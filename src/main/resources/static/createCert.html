@@ -57,6 +57,15 @@
             integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
             crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 
+    <script>
+        $("input[type='text']").on("keyup", function(){
+    if($(this).val() != "" ){
+        $("input[type='submit']").removeAttr("disabled");
+    } else {
+        $("input[type='submit']").attr("disabled", "disabled");
+    }
+});
+</script>
 
 </head>
 <body>
@@ -93,31 +102,31 @@
                         <h3 class="text-center default-text py-3"><i class="fa fa-user"></i> Subject Data:</h3>
                         <!--Body-->
                         <div class="md-form">
-                            <input type="text" id="commonName" class="form-control">
+                            <input type="text" id="commonName" class="form-control" required>
                             <label for="commonName">Common Name</label>
                         </div>
                         <div class="md-form">
-                            <input type="text" id="countryName" class="form-control">
+                            <input type="text" id="countryName" class="form-control" required>
                             <label for="countryName">CountryName</label>
                         </div>
                         <div class="md-form">
-                            <input type="text" id="stateName" class="form-control">
+                            <input type="text" id="stateName" class="form-control" required>
                             <label for="stateName">State name</label>
                         </div>
                         <div class="md-form">
-                            <input type="text" id="localityName" class="form-control">
+                            <input type="text" id="localityName" class="form-control" required>
                             <label for="localityName">Locality Name</label>
                         </div>
                         <div class="md-form">
-                            <input type="text" id="organisationName" class="form-control">
+                            <input type="text" id="organisationName" class="form-control" required>
                             <label for="organisationName">Organisation name</label>
                         </div>
                         <div class="md-form">
-                            <input type="text" id="organisationUnitName" class="form-control">
+                            <input type="text" id="organisationUnitName" class="form-control"required>
                             <label for="organisationUnitName">Organisation unit name</label>
                         </div>
                         <div class="md-form">
-                            <input type="text" id="email" class="form-control">
+                            <input type="text" id="email" class="form-control" required>
                             <label for="email">Email</label>
                         </div>
                         <div class="md-form">
