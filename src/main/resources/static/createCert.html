@@ -3,7 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <title>Create certificate</title>
+    <!-------------------------------------------------------------------------------------------------------->
+    <style>
+        .multiselect {
+            width: 200px;
+        }
 
+        .selectBox {
+            position: relative;
+        }
+
+        .selectBox select {
+            width: 100%;
+            font-weight: bold;
+        }
+
+        .overSelect {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+        }
+
+        #checkboxes {
+            display: none;
+            border: 1px #dadada solid;
+        }
+
+        #checkboxes label {
+            display: block;
+        }
+
+        #checkboxes label:hover {
+            background-color: #1e90ff;
+        }
+    </style>
+    <!-------------------------------------------------------------------------------------------------------->
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <!------ Include the above in your HEAD tag ---------->
@@ -91,17 +127,22 @@
                             <input type="text" id="email" class="form-control" required>
                             <label for="email">Email</label>
                         </div>
-                            <div class="md-form">
-                                <select id="template" class="form-control">
-                                    <option disabled selected value>Template</option>
-                                    <option value="Server Auth">Server Auth</option>
-                                    <option value="Client Auth">Client Auth</option>
-                                    <option value="Code signing">Code signing</option>
-                                    <option value="Email protection">Email protection</option>
-                                    <option value="Time stamping">Time stamping</option>
-                                    <option value="OCSP signing">OCSP signing</option>
-                                    <option value="CA">CA</option>
-                                </select>
+<!--                            <div class="md-form">-->
+                                <div class="md-form">
+                                    <select id="issuerCA" name="issuerCA" class="form-control">
+                                        <option disabled selected value>Choose Issuer</option>
+                                    </select>
+                                </div>
+<!--                                <select id="template" class="form-control">-->
+<!--                                    <option disabled selected value>Template</option>-->
+<!--                                    <option value="Server Auth">Server Auth</option>-->
+<!--                                    <option value="Client Auth">Client Auth</option>-->
+<!--                                    <option value="Code signing">Code signing</option>-->
+<!--                                    <option value="Email protection">Email protection</option>-->
+<!--                                    <option value="Time stamping">Time stamping</option>-->
+<!--                                    <option value="OCSP signing">OCSP signing</option>-->
+<!--                                    <option value="CA">CA</option>-->
+<!--                                </select>-->
                         <div class="md-form">
                             <input type="text" id="alias" class="form-control" required onkeyup="if(this.textLength != 0) {btnNext.disabled = false} else {btnNext.disabled = true}">
                             <label for="alias">Alias</label>
@@ -111,14 +152,45 @@
                             <button class="btn btn-default waves-effect waves-light" id="btnNext" disabled>Next</button>
                         </div>
                                 <div id="afterNext">
-                                    <div class="md-form">
-                                        <select id="issuerCA" name="issuerCA" class="form-control">
-                                            <option disabled selected value>Choose Issuer</option>
-                                        </select>
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" id="CA" value="">  CA</label>
                                     </div>
+<!--                                    <div class="md-form">-->
+<!--                                        <select id="issuerCA" name="issuerCA" class="form-control">-->
+<!--                                            <option disabled selected value>Choose Issuer</option>-->
+<!--                                        </select>-->
+<!--                                    </div>-->
+                                    <div class="multiselect">
+                                        <div class="selectBox" onclick="showCheckboxes()">
+                                            <select>
+                                                <option>Template</option>
+                                            </select>
+                                            <div class="overSelect"></div>
+                                        </div>
+                                    <div id="checkboxes"></div>
+                                </div>
+
+
+                                    <script>
+
+                                        var expanded = false;
+
+                                        function showCheckboxes() {
+                                            var checkboxes = document.getElementById("checkboxes");
+                                            if (!expanded) {
+                                                checkboxes.style.display = "block";
+                                                expanded = true;
+                                            } else {
+                                                checkboxes.style.display = "none";
+                                                expanded = false;
+                                            }
+                                        }
+                                    </script>
+
                                     <div class="text-center">
                                         <button class="btn btn-default waves-effect waves-light" id="btnCreate">Create and sign</button>
                                     </div>
+                                </div>
                                 </div>
                             <div>
                     </div>
