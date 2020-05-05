@@ -107,6 +107,21 @@ public class CertificateService {
                     new SubjectKeyIdentifier(subjectData.getPublicKey().getEncoded()));
 
 
+            ExtendedKeyUsageDTO ekuDTO = dto.getExtendedKeyUsageDTO();
+            if(ekuDTO.isServerAuth().equals("1.3.6.1.5.5.7.3.1"))
+                System.out.println("CertificateService-----------> server!!");
+            if(ekuDTO.isClientAuth().equals("1.3.6.1.5.5.7.3.2"))
+                System.out.println("CertificateService-----------> client!!");
+            if(ekuDTO.isCodeSigning().equals("1.3.6.1.5.5.7.3.1.3"))
+                System.out.println("CertificateService-----------> code!!");
+            if(ekuDTO.isEmailProtection().equals("1.3.6.1.5.5.7.3.4"))
+                System.out.println("CertificateService-----------> email!!");
+            if(ekuDTO.isEmailProtection().equals("1.3.6.1.5.5.7.3.8"))
+                System.out.println("CertificateService-----------> time!!");
+            if(ekuDTO.isEmailProtection().equals("1.3.6.1.5.5.7.3.9"))
+                System.out.println("CertificateService-----------> ocsp!!");
+
+
             //TODO proveriti za ovu ekstenziju
             if(dto.getExtendedKeyUsageDTO().isExtendedKeyUsage()) {
                 Collection<ASN1ObjectIdentifier> usages = getOids(dto.getExtendedKeyUsageDTO());
@@ -241,9 +256,44 @@ public class CertificateService {
                 subjectData.getX500name(),
                 subjectData.getPublicKey());
 
+        if(dto.getKeyUsageDTO().isKeyUsage()){
+            X509KeyUsage keyuse = new X509KeyUsage(
+                    dto.getKeyUsageDTO().isDigitalSignature() |
+                            dto.getKeyUsageDTO().isNonRepudiation()   |
+                            dto.getKeyUsageDTO().isKeyEncipherment()  |
+                            dto.getKeyUsageDTO().isDataEncipherment() |
+                            dto.getKeyUsageDTO().isKeyAgreement() |
+                            dto.getKeyUsageDTO().isKeyCertSign() |
+                            dto.getKeyUsageDTO().iscRLSign() |
+                            dto.getKeyUsageDTO().isEncihperOnly() |
+                            dto.getKeyUsageDTO().isDecipherOnly()
+            );
+
+            certGen.addExtension(Extension.keyUsage, true, keyuse);
+
+        }
+
         certGen.addExtension(Extension.basicConstraints, true, new BasicConstraints(true));
 
+        ExtendedKeyUsageDTO ekuDTO = dto.getExtendedKeyUsageDTO();
+        if(ekuDTO.isServerAuth().equals("1.3.6.1.5.5.7.3.1"))
+            System.out.println("CertificateService-----------> server");
+        if(ekuDTO.isClientAuth().equals("1.3.6.1.5.5.7.3.2"))
+            System.out.println("CertificateService-----------> client");
+        if(ekuDTO.isCodeSigning().equals("1.3.6.1.5.5.7.3.1.3"))
+            System.out.println("CertificateService-----------> code");
+        if(ekuDTO.isEmailProtection().equals("1.3.6.1.5.5.7.3.4"))
+            System.out.println("CertificateService-----------> email");
+        if(ekuDTO.isEmailProtection().equals("1.3.6.1.5.5.7.3.8"))
+            System.out.println("CertificateService-----------> time");
+        if(ekuDTO.isEmailProtection().equals("1.3.6.1.5.5.7.3.9"))
+            System.out.println("CertificateService-----------> ocsp");
 
+        if(dto.getExtendedKeyUsageDTO().isExtendedKeyUsage()){
+            Collection<ASN1ObjectIdentifier> usages = getOids(dto.getExtendedKeyUsageDTO());
+            System.out.println("usages.size()"+usages.size());
+            certGen.addExtension(Extension.extendedKeyUsage, true, createExtendedUsage(usages));
+        }
 
         certGen.addExtension(Extension.authorityKeyIdentifier, false,
                 new AuthorityKeyIdentifier(issuerData.getPublicKey().getEncoded()));
@@ -286,7 +336,7 @@ public class CertificateService {
             kps[idx++] = KeyPurposeId.getInstance(oid);
         }
 
-        return new ExtendedKeyUsage(kps[0]);
+        return new ExtendedKeyUsage(kps);
     }
 
 
