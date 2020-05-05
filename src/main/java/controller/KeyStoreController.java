@@ -69,7 +69,44 @@ public class KeyStoreController {
 
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
+    @GetMapping(value="/getCert/{keyPassword}")
+    public ResponseEntity<CertificateDTO> getCertificate(@PathVariable("keyPassword") String keyPassword){
 
+        try {
+            List<CertificateDTO> root = keyStoreService.getAllCertificates("root");
+            List<CertificateDTO> intermediate = keyStoreService.getAllCertificates("intermediate");
+            List<CertificateDTO> endentity = keyStoreService.getAllCertificates("endentity");
+
+            List<CertificateDTO> all = new ArrayList<>();
+            if(root != null)
+                all.addAll(root);
+            else
+                System.out.println("null root ");
+            if(intermediate != null)
+                all.addAll(intermediate);
+            else
+                System.out.println("null intermediate");
+            if(endentity != null)
+                all.addAll(endentity);
+            else
+                System.out.println("null endentity");
+            CertificateDTO res = null;
+            System.out.println("Sifra "+keyPassword);
+            for(CertificateDTO cDTO : all){
+                System.out.println("password "+cDTO.getAlias());
+                if(cDTO.getAlias().equals(keyPassword)){
+                    System.out.println("nasao");
+                    if(cDTO.getExtendedKeyUsageDTO() == null)
+                        System.out.println("nema getExtendedKeyUssage");
+                    res = cDTO;
+                }
+            }
+            return new ResponseEntity<>(res, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
 
     @PostMapping(value="/download")
     public ResponseEntity<CertificateDTO> downloadCertificate(@RequestBody CertificateDTO dto) throws CertificateException, IOException {

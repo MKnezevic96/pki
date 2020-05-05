@@ -2,6 +2,7 @@ package service;
 
 import dto.CertificateDTO;
 import dto.DataDTO;
+import dto.ExtendedKeyUsageDTO;
 import enumeration.CertificateType;
 import model.IssuerData;
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -239,10 +240,13 @@ public class KeyStoreService {
         String keyStorePath = "keystores/" + type.toLowerCase() + ".p12";
 
         List<CertificateDTO> certs = new ArrayList<>();
-
-        try{
+        List<String> list = new ArrayList<>();
+                //try{
             KeyStore keyStore = loadKeystore(keyStorePath);
-            List<String> list = Collections.list(keyStore.aliases());
+            try {
+                list = Collections.list(keyStore.aliases());
+            } catch (NullPointerException ignored) {}
+
 
             for(String alias : list){
                 Certificate cert = readCertificate(keyStorePath, alias);
@@ -252,6 +256,42 @@ public class KeyStoreService {
 
                 JcaX509CertificateHolder certHolder = new JcaX509CertificateHolder((X509Certificate) cert);
                 dto.setSerialNumber(certHolder.getSerialNumber().toString());
+
+                ExtendedKeyUsageDTO ekuDTO = new ExtendedKeyUsageDTO();
+                X509Certificate xcert =  (X509Certificate) cert;
+                System.out.println("****"+xcert);
+                if(xcert == null){
+                    System.out.println("null je");
+                }else{
+                    System.out.println("ima necega");
+                }
+                List<String> g = xcert.getExtendedKeyUsage();
+                final boolean[] k = xcert.getKeyUsage();
+                System.out.println("----"+g);
+                System.out.println("++++"+k);
+                if(g != null) {
+                    for (String s : g) {
+                        if (s.equals("1.3.6.1.5.5.7.3.1")) {
+                            ekuDTO.setServerAuth(true);
+                        }
+                        if (s.equals("1.3.6.1.5.5.7.3.2")) {
+                            ekuDTO.setClientAuth(true);
+                        }
+                        if (s.equals("1.3.6.1.5.5.7.3.1.3")) {
+                            ekuDTO.setCodeSigning(true);
+                        }
+                        if (s.equals("1.3.6.1.5.5.7.3.4")) {
+                            ekuDTO.setEmailProtection(true);
+                        }
+                        if (s.equals("1.3.6.1.5.5.7.3.8")) {
+                            ekuDTO.setTimeStamping(true);
+                        }
+                        if (s.equals("1.3.6.1.5.5.7.3.9")) {
+                            ekuDTO.setOcspSigning(true);
+                        }
+                    }
+                }
+                dto.setExtendedKeyUsageDTO(ekuDTO);
 
                 X500Name x500name = new JcaX509CertificateHolder((X509Certificate) cert).getSubject();
                 RDN cn = x500name.getRDNs(BCStyle.CN)[0];
@@ -271,7 +311,7 @@ public class KeyStoreService {
 
                 certs.add(dto);
             }
-        } catch (NullPointerException ignored) {}
+        //} catch (NullPointerException ignored) {}
 
         return certs;
     }
