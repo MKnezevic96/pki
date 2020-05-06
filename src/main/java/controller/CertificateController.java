@@ -41,23 +41,10 @@ public class CertificateController {
 
     @PostMapping(value="/generateSelfSigned")
     public ResponseEntity<Void> generateSelfSignedSertificate(@RequestBody CertificateDTO dto){
-
+        System.out.println(dto.getAlias());
         if(!dto.getIssuerData().getCommonName().equals(dto.getSubjectData().getCommonName())){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        ExtendedKeyUsageDTO ekuDTO = dto.getExtendedKeyUsageDTO();
-        if(ekuDTO.isServerAuth().equals("1.3.6.1.5.5.7.3.1"))
-            //System.out.println("CertificateController-----------> server");
-        if(ekuDTO.isClientAuth().equals("1.3.6.1.5.5.7.3.2"))
-            //System.out.println("CertificateController-----------> client");
-        if(ekuDTO.isCodeSigning().equals("1.3.6.1.5.5.7.3.1.3"))
-            //System.out.println("CertificateController-----------> code");
-        if(ekuDTO.isEmailProtection().equals("1.3.6.1.5.5.7.3.4"))
-            //System.out.println("CertificateController-----------> email");
-        if(ekuDTO.isEmailProtection().equals("1.3.6.1.5.5.7.3.8"))
-            //System.out.println("CertificateController-----------> time");
-        if(ekuDTO.isEmailProtection().equals("1.3.6.1.5.5.7.3.9"))
-            //System.out.println("CertificateController-----------> ocsp");
 
         try {
             certificateService.generateSelfSignedX509Certificate(dto);

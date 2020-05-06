@@ -322,6 +322,8 @@ public class CertificateService {
         certificateSummary.setIssuerAlias(dto.getAlias());
         certificateSummary.setSerialNumber(new BigInteger(subjectData.getSerialNumber()).toString());
         certificateSummary.setRoot(true);
+        certificateSummary.setCertType(null);
+
         certificateSummaryRepository.save(certificateSummary);
 
         System.out.println("-------------------------------------------"+cert+"-------------------------------");

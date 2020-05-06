@@ -149,7 +149,7 @@ $(document).ready(function() {
                                      		"surname":"", "uid":"", "serialNumber":"","email":email}
 
 	 		let certDto = JSON.stringify({"issuerData":issuerDataDTO, "subjectData":subjectDataDTO, "keyStorePassword":keyStorePassword, "keyPassword": keyPassword,
-		 									"basicConstrains":isCA, "extendedKeyUsageDTO":extendedKeyUsageDTO, "keyUsageDTO":keyUsageDTO, "alias":alias})
+		 									"basicConstrains":isCA, "extendedKeyUsageDTO":extendedKeyUsageDTO, "keyUsageDTO":keyUsageDTO, "alias":alias, "certType": null})
 
 	 		console.log(certDto)     // samo provera
 

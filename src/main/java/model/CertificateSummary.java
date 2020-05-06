@@ -40,7 +40,7 @@ public class CertificateSummary {
     @Column(name = "revocationDate", nullable = true)
     private Date revocationDate;
 
-    @Column(name = "certType", nullable = false)
+    @Column(name = "certType")
     private CertType certType;
 
 
