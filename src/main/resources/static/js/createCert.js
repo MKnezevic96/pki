@@ -10,6 +10,7 @@ window.onload = function () {
 
 
 
+
         $.ajax({
         		type: 'GET',
         		url: 'api/keyStore/getAliases',

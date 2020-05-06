@@ -63,6 +63,8 @@
                     <div class="card-body">
                         <h3 class="text-center default-text py-3"><i class="fa fa-user"></i> Subject Data:</h3>
                         <!--Body-->
+
+
                         <div class="md-form">
                             <input type="text" id="commonName" class="form-control" required>
                             <label for="commonName">Common Name</label>
@@ -103,12 +105,12 @@
                                     <option value="CA">CA</option>
                                 </select>
                         <div class="md-form">
-                            <input type="text" id="alias" class="form-control" required onkeyup="if(this.textLength != 0) {btnNext.disabled = false} else {btnNext.disabled = true}">
+                            <input type="text" id="alias" class="form-control" required >
                             <label for="alias">Alias</label>
                         </div>
 
                         <div class="text-center">
-                            <button class="btn btn-default waves-effect waves-light" id="btnNext" disabled>Next</button>
+                            <button class="btn btn-default waves-effect waves-light" id="btnNext" >Next</button>
                         </div>
                                 <div id="afterNext">
                                     <div class="md-form">
@@ -121,9 +123,12 @@
                                     </div>
                                 </div>
                             <div>
+
                     </div>
                 </div>
+
             </div>
+
             <!-- Grid column -->
         </div>
 
