@@ -147,10 +147,18 @@
 
                         </div>
 
-                            <div class="multiselect">
-                                <div class="selectBox" onclick="showCheckboxes()">
-                                    <select>
-                                        <option>Template</option>
+                            <div class="md-form">
+                                <input type="text" id="alias" name="alias"  class="form-control" required onkeyup="if(this.textLength != 0) {btnCreate.disabled = false} else {btnCreate.disabled = true}">
+                                <label for="alias">Alias</label>
+                                <span class="error">This field is required</span>
+                                <span class="error_form" id="alias_error_message"></span>
+
+                            </div>
+
+                            <div class="md-multiselect">
+                                <div class="selectBox"  onclick="showCheckboxes()">
+                                    <select class="form-control" style="font-weight: normal !important">
+                                        <option>Templates</option>
                                     </select>
                                     <div class="overSelect"></div>
                                 </div>
@@ -187,13 +195,7 @@
                             </script>
 
                         <div class="md-form ">
-                            <div class="md-form">
-                                <input type="text" id="alias" name="alias"  class="form-control" required onkeyup="if(this.textLength != 0) {btnCreate.disabled = false} else {btnCreate.disabled = true}">
-                                <label for="alias">Alias</label>
-                                <span class="error">This field is required</span>
-                                <span class="error_form" id="alias_error_message"></span>
 
-                            </div>
                                 <div class="text-center actions">
                                     <button class="btn btn-default waves-effect waves-light" id="btnCreate" type="submit"  disabled="disabled">Create and sign</button>
                                 </div>

@@ -10,8 +10,6 @@ public class CertificateDTO {
     private DataDTO issuerData;
     private DataDTO subjectData;
     private String alias;
-    private String keyPassword;
-    private String keyStorePassword;
     private String notBefore;
     private String notAfter;
     private boolean basicConstrains;
@@ -36,15 +34,12 @@ public class CertificateDTO {
 
     }
 
-    public CertificateDTO(String serialNumber, DataDTO issuerData, DataDTO subjectData, String alias, String keyPassword,
-                          String keyStorePassword, String notBefore, String notAfter, boolean basicConstrains,
+    public CertificateDTO(String serialNumber, DataDTO issuerData, DataDTO subjectData, String alias, String notBefore, String notAfter, boolean basicConstrains,
                           ExtendedKeyUsageDTO extendedKeyUsageDTO, KeyUsageDTO keyUsageDTO, boolean authorityKeyIdentifier, boolean subjectKeyIdentifier,
                           String issuerAlias, String type, String certType) {
         this.serialNumber = serialNumber;
 
         this.alias = alias;
-        this.keyPassword = keyPassword;
-        this.keyStorePassword = keyStorePassword;
         this.notBefore = notBefore;
         this.notAfter = notAfter;
         this.basicConstrains = basicConstrains;
@@ -106,13 +101,6 @@ public class CertificateDTO {
         this.subjectData = subjectData;
     }
 
-    public String getKeyStorePassword() {
-        return keyStorePassword;
-    }
-
-    public void setKeyStorePassword(String keyStorePassword) {
-        this.keyStorePassword = keyStorePassword;
-    }
 
     public String getSerialNumber() {
         return serialNumber;
@@ -176,14 +164,6 @@ public class CertificateDTO {
 
     public void setKeyUsageDTO(KeyUsageDTO keyUsageDTO) {
         this.keyUsageDTO = keyUsageDTO;
-    }
-
-    public String getKeyPassword() {
-        return keyPassword;
-    }
-
-    public void setKeyPassword(String keyPassword) {
-        this.keyPassword = keyPassword;
     }
 
     public String isAuthorityKeyIdentifier() {
