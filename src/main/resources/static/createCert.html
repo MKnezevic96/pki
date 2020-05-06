@@ -127,6 +127,10 @@
                             <input type="text" id="email" class="form-control" required>
                             <label for="email">Email</label>
                         </div>
+                        <div class="md-form">
+                            <input type="text" id="alias" class="form-  control" required onkeyup="if(this.textLength != 0) {btnNext.disabled = false} else {btnNext.disabled = true}">
+                            <label for="alias">Alias</label>
+                        </div>
 <!--                            <div class="md-form">-->
                                 <div class="md-form">
                                     <select id="issuerCA" name="issuerCA" class="form-control">
@@ -143,16 +147,13 @@
 <!--                                    <option value="OCSP signing">OCSP signing</option>-->
 <!--                                    <option value="CA">CA</option>-->
 <!--                                </select>-->
-                        <div class="md-form">
-                            <input type="text" id="alias" class="form-control" required onkeyup="if(this.textLength != 0) {btnNext.disabled = false} else {btnNext.disabled = true}">
-                            <label for="alias">Alias</label>
-                        </div>
+
 
                         <div class="text-center">
                             <button class="btn btn-default waves-effect waves-light" id="btnNext" disabled>Next</button>
                         </div>
                                 <div id="afterNext">
-                                    <div class="checkbox">
+                                    <div class="md-checkbox">
                                         <label><input type="checkbox" id="CA" value="">  CA</label>
                                     </div>
 <!--                                    <div class="md-form">-->
@@ -160,10 +161,10 @@
 <!--                                            <option disabled selected value>Choose Issuer</option>-->
 <!--                                        </select>-->
 <!--                                    </div>-->
-                                    <div class="multiselect">
+                                    <div class="md-multiselect">
                                         <div class="selectBox" onclick="showCheckboxes()">
-                                            <select>
-                                                <option>Template</option>
+                                            <select class="form-control" style="font-weight: normal !important">
+                                                <option>Templates</option>
                                             </select>
                                             <div class="overSelect"></div>
                                         </div>

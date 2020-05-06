@@ -155,9 +155,6 @@ $(document).ready(function() {
 
 
 
-
-
-
     		$.ajax({
     			type: 'POST',
     			url:'/api/certificates/generateSelfSigned',
@@ -171,7 +168,7 @@ $(document).ready(function() {
                                   if(data.status == "200")
                                    {
                                         alert('Root certificate made successfully. ')
-                                    	//window.location.href = "centreAdminPage.html"
+                                    	window.location.href = "certificates.html"
                                    }
                                    else {
                                         e.preventDefault();

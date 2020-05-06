@@ -7,6 +7,7 @@ window.onload = function () {
         e.preventDefault()
         $('#btnNext').hide()
         $('#afterNext').show()
+        $('#issuerCA').prop('disabled', true)
 
         let issuerAlias = $('#issuerCA option:selected').val()
         $.ajax({
@@ -201,11 +202,11 @@ window.onload = function () {
 
                                           if(data.status == "200")
                                            {
-                                                alert('hoce')
-                                                //window.location.href = "centreAdminPage.html"
+                                                alert('Certificate made successfully')
+                                                window.location.href = "certificates.html"
                                            }
                                            else {
-                                                alert('nece')
+                                                alert('Cannot make certificate')
                                            }
                                     }
 
