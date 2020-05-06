@@ -3,10 +3,16 @@ window.onload = function () {
 
     $('#afterNext').hide()
 
+
     $('#btnNext').click(function(e){
         e.preventDefault()
         $('#btnNext').hide()
         $('#afterNext').show()
+        let certType = $('#certType option:selected').val();
+        // if(certType === 'server')
+        //     $('#checkboxCA').hide();
+        if(certType === 'client')
+            $('#checkboxCA').hide();
 
         let issuerAlias = $('#issuerCA option:selected').val()
         $.ajax({
@@ -77,6 +83,9 @@ window.onload = function () {
             let timeStamping = false;
             let ocspSigning = false;
             let keyCertSign = false;
+            let certType = $('#certType option:selected').val();
+
+
         if($('#server_auth').is(":checked")){
             keyUsage = true;
             digitalSignature = true;
@@ -176,16 +185,16 @@ window.onload = function () {
 
                     let issuerDataDTO = {"commonName":issuerData.commonName,"localityName":issuerData.localityName,"stateName":issuerData.stateName,
                     "countryName":issuerData.countryName,"organisationName":issuerData.organisationName, "organisationUnitName":issuerData.organisationUnitName,"givenName":"",
-                    "surname":"", "uid":"", "serialNumber":"","email":issuerData.email}
+                    "surname":"", "uid":"", "serialNumber":"","email":issuerData.email};
 
                     let subjectDataDTO = {"commonName":commonName,"localityName":localityName,"stateName":stateName,
                                                     "countryName":countryName,"organisationName":organisationName, "organisationUnitName":organisationUnitName,"givenName":"",
-                                                    "surname":"", "uid":"", "serialNumber":"","email":email}
+                                                    "surname":"", "uid":"", "serialNumber":"","email":email};
 
                     let certDto = JSON.stringify({"issuerData":issuerDataDTO, "subjectData":subjectDataDTO,
                                                     "basicConstrains":isCA, "extendedKeyUsageDTO":extendedKeyUsageDTO,
                                                     "keyUsageDTO":keyUsageDTO, "alias":alias, "issuerAlias":issuerAlias,
-                                                    "notAfter": issuerData.notAfter})
+                                                    "notAfter": issuerData.notAfter, "certType": certType});
 
 
                     console.log(certDto)

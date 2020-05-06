@@ -147,12 +147,21 @@
                             <input type="text" id="alias" class="form-control" required onkeyup="if(this.textLength != 0) {btnNext.disabled = false} else {btnNext.disabled = true}">
                             <label for="alias">Alias</label>
                         </div>
-
+<!--                        ////////////////////////////////////////////////////////////////////////////////////////-->
+                        <div class="md-form">
+                            <select id="certType" name="certType" class="form-control" required onchange="{btnNext.disabled = false}">
+                                <option disabled selected value>Choose Type</option>
+                                <option value="client">Client</option>
+                                <option value="server">Server</option>
+                                <option value="subsystem">Subsystem</option>
+                            </select>
+                        </div>
+<!--                        ////////////////////////////////////////////////////////////////////////////////////////-->
                         <div class="text-center">
                             <button class="btn btn-default waves-effect waves-light" id="btnNext" disabled>Next</button>
                         </div>
                                 <div id="afterNext">
-                                    <div class="checkbox">
+                                    <div class="checkbox" id="checkboxCA">
                                         <label><input type="checkbox" id="CA" value="">  CA</label>
                                     </div>
 <!--                                    <div class="md-form">-->

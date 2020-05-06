@@ -1,6 +1,8 @@
 package model;
 
 
+import enumeration.CertType;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -38,12 +40,24 @@ public class CertificateSummary {
     @Column(name = "revocationDate", nullable = true)
     private Date revocationDate;
 
+    @Column(name = "certType", nullable = false)
+    private CertType certType;
+
+
+    public CertType getCertType() {
+        return certType;
+    }
+
+    public void setCertType(CertType certType) {
+        this.certType = certType;
+    }
+
 
     public CertificateSummary(){
 
     }
 
-    public CertificateSummary(Long id, String alias, String issuerAlias, String serialNumber, boolean isRevoked, boolean isRoot, boolean isCa, Date revocationDate) {
+    public CertificateSummary(Long id, String alias, String issuerAlias, String serialNumber, boolean isRevoked, boolean isRoot, boolean isCa, Date revocationDate, CertType certType) {
         this.id = id;
         this.alias = alias;
         this.serialNumber = serialNumber;
@@ -52,6 +66,7 @@ public class CertificateSummary {
         this.isCa = isCa;
         this.revocationDate = revocationDate;
         this.issuerAlias = issuerAlias;
+        this.certType = certType;
     }
 
     public boolean isRevoked() {

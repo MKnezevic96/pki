@@ -37,6 +37,19 @@ function addCertTr(cert)
         let subjectDataDTO = {"commonName":cert.subjectData.commonName}
         let certDto = JSON.stringify({"issuerData":issuerDataDTO, "subjectData":subjectDataDTO, "type":cert.type, "alias":cert.alias})
 
+        let tip;
+        $.ajax({
+            type: 'POST',
+            url:'/api/ocsp/getStatus',
+            data: certDto,
+            dataType : "json",
+            contentType : "application/json; charset=utf-8",
+            complete: function(data)
+            {
+                tip = data.responseText
+            }
+        })
+
             $.ajax({
                 type: 'POST',
                 url:'/api/ocsp/ocspResponse',
@@ -52,6 +65,7 @@ function addCertTr(cert)
                         let tdSubjectCN=$('<td>'+cert.subjectData.commonName +'</td>')
                         let tdIssuerCN=$('<td>'+cert.issuerData.commonName +'</td>')
                         let tdType=$('<td>'+ cert.type + '</td>')
+                        let tdTip=$('<td>'+ tip + '</td>')
                         let tdStatus=$('<td>' + status + '</td>')
                         let tdDownload = $('<td><button class="btn btn-default waves-effect waves-light" id="btnDownload">Download</button></td>')
                         let tdRevoke = $('<td><button class="btn btn-default waves-effect waves-light" id="btnRevoke">Revoke</button></td>')
@@ -60,7 +74,7 @@ function addCertTr(cert)
                         tdDownload.click(download(cert))
                         tdRevoke.click(revoke(cert))
 
-                        tr.append(tdAlias).append(tdSubjectCN).append(tdIssuerCN).append(tdType).append(tdStatus).append(tdDownload)
+                        tr.append(tdAlias).append(tdSubjectCN).append(tdIssuerCN).append(tdType).append(tdTip).append(tdStatus).append(tdDownload)
                         if(status==="GOOD"){
                             tr.append(tdRevoke)
                         }

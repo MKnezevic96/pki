@@ -1,5 +1,7 @@
 package dto;
 
+import enumeration.CertType;
+
 public class CertificateSummaryDTO {
 
     private long id;
@@ -11,13 +13,14 @@ public class CertificateSummaryDTO {
     private boolean isRevoked = false;
     private String revocationDate;
     private String revocationReason;
+    private CertType certType;
 
 
     public CertificateSummaryDTO(){
 
     }
 
-    public CertificateSummaryDTO(long id, String serialNumber, String alias, String issuerAlias, boolean isRoot, boolean isCa, boolean isRevoked, String revocationDate, String revocationReason) {
+    public CertificateSummaryDTO(long id, String serialNumber, String alias, String issuerAlias, boolean isRoot, boolean isCa, boolean isRevoked, String revocationDate, String revocationReason, CertType certType) {
         this.id = id;
         this.serialNumber = serialNumber;
         this.alias = alias;
@@ -27,6 +30,15 @@ public class CertificateSummaryDTO {
         this.revocationDate = revocationDate;
         this.revocationReason = revocationReason;
         this.issuerAlias = issuerAlias;
+        this.certType = certType;
+    }
+
+    public CertType getCertType() {
+        return certType;
+    }
+
+    public void setCertType(CertType certType) {
+        this.certType = certType;
     }
 
     public boolean isRevoked() {
