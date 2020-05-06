@@ -1,6 +1,7 @@
 package controller;
 
 import dto.CertificateDTO;
+import enumeration.CertType;
 import model.CertificateSummary;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
@@ -82,6 +83,24 @@ public class OCSPController {
         }
 
     }
+
+
+    @PostMapping(value = "/getStatus")
+    public ResponseEntity<String> getStatus(@RequestBody CertificateDTO dto) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, OCSPException, OperatorCreationException, UnrecoverableKeyException {
+
+        CertificateSummary certSum = certificateSummaryRepository.findByAlias(dto.getAlias());
+        String type = "";
+        try {
+            if (certSum.getCertType() == CertType.SERVER)
+                type = "server";
+            if (certSum.getCertType() == CertType.CLIENT)
+                type = "client";
+            if (certSum.getCertType() == CertType.SUBSYSTEM)
+                type = "subsystem";
+        }catch(NullPointerException e){}
+
+        return new ResponseEntity<>(type, HttpStatus.OK);
+        }
 }
 
 

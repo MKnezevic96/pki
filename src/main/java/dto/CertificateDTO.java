@@ -1,5 +1,7 @@
 package dto;
 
+import enumeration.CertType;
+
 import java.util.Date;
 
 public class CertificateDTO {
@@ -18,7 +20,15 @@ public class CertificateDTO {
     private String type;
 
     private String issuerAlias;
+    private String certType;
 
+    public String getCertType() {
+        return certType;
+    }
+
+    public void setCertType(String certType) {
+        this.certType = certType;
+    }
 
     public CertificateDTO(){
 
@@ -26,7 +36,7 @@ public class CertificateDTO {
 
     public CertificateDTO(String serialNumber, DataDTO issuerData, DataDTO subjectData, String alias, String notBefore, String notAfter, boolean basicConstrains,
                           ExtendedKeyUsageDTO extendedKeyUsageDTO, KeyUsageDTO keyUsageDTO, boolean authorityKeyIdentifier, boolean subjectKeyIdentifier,
-                          String issuerAlias, String type) {
+                          String issuerAlias, String type, String certType) {
         this.serialNumber = serialNumber;
 
         this.alias = alias;
@@ -37,6 +47,7 @@ public class CertificateDTO {
         this.subjectKeyIdentifier = subjectKeyIdentifier;
         this.issuerAlias = issuerAlias;
         this.type = type;
+        this.certType = certType;
 
         KeyUsageDTO keyUsage = new KeyUsageDTO();
         keyUsage.setKeyUsage(keyUsageDTO.isKeyUsage());

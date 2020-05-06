@@ -3,6 +3,7 @@ package service;
 import dto.CertificateDTO;
 import dto.DataDTO;
 import dto.ExtendedKeyUsageDTO;
+import enumeration.CertType;
 import model.CertificateSummary;
 import model.IssuerData;
 import model.SubjectData;
@@ -109,17 +110,17 @@ public class CertificateService {
 
             ExtendedKeyUsageDTO ekuDTO = dto.getExtendedKeyUsageDTO();
             if(ekuDTO.isServerAuth().equals("1.3.6.1.5.5.7.3.1"))
-                System.out.println("CertificateService-----------> server!!");
+                //System.out.println("CertificateService-----------> server!!");
             if(ekuDTO.isClientAuth().equals("1.3.6.1.5.5.7.3.2"))
-                System.out.println("CertificateService-----------> client!!");
+                //System.out.println("CertificateService-----------> client!!");
             if(ekuDTO.isCodeSigning().equals("1.3.6.1.5.5.7.3.1.3"))
-                System.out.println("CertificateService-----------> code!!");
+                //System.out.println("CertificateService-----------> code!!");
             if(ekuDTO.isEmailProtection().equals("1.3.6.1.5.5.7.3.4"))
-                System.out.println("CertificateService-----------> email!!");
+                //System.out.println("CertificateService-----------> email!!");
             if(ekuDTO.isEmailProtection().equals("1.3.6.1.5.5.7.3.8"))
-                System.out.println("CertificateService-----------> time!!");
+                //System.out.println("CertificateService-----------> time!!");
             if(ekuDTO.isEmailProtection().equals("1.3.6.1.5.5.7.3.9"))
-                System.out.println("CertificateService-----------> ocsp!!");
+                //System.out.println("CertificateService-----------> ocsp!!");
 
 
             //TODO proveriti za ovu ekstenziju
@@ -142,6 +143,15 @@ public class CertificateService {
                 certificateSummary.setAlias(dto.getAlias());
                 certificateSummary.setIssuerAlias(dto.getIssuerAlias());
                 certificateSummary.setSerialNumber(new BigInteger(subjectData.getSerialNumber()).toString());
+                if(dto.getCertType().equals("server")){
+                    certificateSummary.setCertType(CertType.SERVER);
+                }
+                if(dto.getCertType().equals("client")){
+                    certificateSummary.setCertType(CertType.CLIENT);
+                }
+                if(dto.getCertType().equals("subsystem")) {
+                    certificateSummary.setCertType(CertType.SUBSYSTEM);
+                }
                 certificateSummaryRepository.save(certificateSummary);
 
                 keyStoreService.saveCertificate(dto.getAlias(), subjectData.getPrivateKey(), cert);
@@ -312,6 +322,8 @@ public class CertificateService {
         certificateSummary.setIssuerAlias(dto.getAlias());
         certificateSummary.setSerialNumber(new BigInteger(subjectData.getSerialNumber()).toString());
         certificateSummary.setRoot(true);
+        certificateSummary.setCertType(null);
+
         certificateSummaryRepository.save(certificateSummary);
 
         System.out.println("-------------------------------------------"+cert+"-------------------------------");
