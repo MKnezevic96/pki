@@ -109,18 +109,18 @@ public class CertificateService {
 
 
             ExtendedKeyUsageDTO ekuDTO = dto.getExtendedKeyUsageDTO();
-            if(ekuDTO.isServerAuth().equals("1.3.6.1.5.5.7.3.1"))
-                //System.out.println("CertificateService-----------> server!!");
-            if(ekuDTO.isClientAuth().equals("1.3.6.1.5.5.7.3.2"))
-                //System.out.println("CertificateService-----------> client!!");
-            if(ekuDTO.isCodeSigning().equals("1.3.6.1.5.5.7.3.1.3"))
-                //System.out.println("CertificateService-----------> code!!");
-            if(ekuDTO.isEmailProtection().equals("1.3.6.1.5.5.7.3.4"))
-                //System.out.println("CertificateService-----------> email!!");
-            if(ekuDTO.isEmailProtection().equals("1.3.6.1.5.5.7.3.8"))
-                //System.out.println("CertificateService-----------> time!!");
-            if(ekuDTO.isEmailProtection().equals("1.3.6.1.5.5.7.3.9"))
-                //System.out.println("CertificateService-----------> ocsp!!");
+//            if(ekuDTO.isServerAuth().equals("1.3.6.1.5.5.7.3.1"))
+//                //System.out.println("CertificateService-----------> server!!");
+//            if(ekuDTO.isClientAuth().equals("1.3.6.1.5.5.7.3.2"))
+//                //System.out.println("CertificateService-----------> client!!");
+//            if(ekuDTO.isCodeSigning().equals("1.3.6.1.5.5.7.3.1.3"))
+//                //System.out.println("CertificateService-----------> code!!");
+//            if(ekuDTO.isEmailProtection().equals("1.3.6.1.5.5.7.3.4"))
+//                //System.out.println("CertificateService-----------> email!!");
+//            if(ekuDTO.isEmailProtection().equals("1.3.6.1.5.5.7.3.8"))
+//                //System.out.println("CertificateService-----------> time!!");
+//            if(ekuDTO.isEmailProtection().equals("1.3.6.1.5.5.7.3.9"))
+//                //System.out.println("CertificateService-----------> ocsp!!");
 
 
             //TODO proveriti za ovu ekstenziju

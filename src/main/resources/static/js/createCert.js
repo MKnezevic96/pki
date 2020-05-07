@@ -140,7 +140,8 @@ window.onload = function () {
             let extendedKeyUsageDTO;
         keyUsageDTO = { "keyUsage": keyUsage, "digitalSignature": digitalSignature, "keyEncipherment": keyEncipherment, "keyAgreement": keyAgreement,  "nonRepudiation": nonRepudiation, "keyCertSign": keyCertSign}
         extendedKeyUsageDTO = { "extendedKeyUsage": extendedKeyUsage, "serverAuth": serverAuth, "clientAuth": clientAuth, "codeSigning": codeSigning, "emailProtection": emailProtection, "timeStamping": timeStamping, "ocspSigning": ocspSigning }
-
+        console.log(keyUsageDTO);
+        console.log(extendedKeyUsageDTO);
 
 
         // if(template ==="Server Auth"){
