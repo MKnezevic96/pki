@@ -1,51 +1,6 @@
 $(document).ready(function() {
 
-
  $('#btnCreate').click(function(e){
-/*
- $("#contact").validate({
-    rules: {
-
-    commonName: {
-            required: true,
-            lettersonly: true
-          },
-    countryName: {
-             required: true,
-             lettersonly: true
-           },
-    stateName: {
-             required: true,
-             lettersonly: true
-           },
-    localityName: {
-                  required: true,
-                  lettersonly: true
-                },
-    organisationName: {
-                   required: true,
-                   lettersonly: true
-                 },
-    organisationUnitName: {
-                    required: true,
-                    lettersonly: true
-                  },
-    email: {
-        required: true,
-        email: true,
-        //remote: "http://localhost:3000/inputValidator"
-      },
-
-    alias: {
-        required: true,
-        nowhitespace: true,
-      }
-   }
-  })
-
-
-*/
-
 
     		e.preventDefault();
             let commonName = $('#commonName').val()
@@ -75,15 +30,29 @@ $(document).ready(function() {
 	 let ocspSigning = false;
 	 let keyCertSign = false;
 
-	 if($('#server_auth').is(":checked")){
-		 console.log('server');
-		 keyUsage = true;
-		 digitalSignature = true;
-		 keyEncipherment = true;
-		 keyAgreement = true;
-		 extendedKeyUsage = true;
-		 serverAuth = true;
-	 }
+	 // valid
+
+	             var empty = false;
+                 $('#contact input').each(function() {
+                     if ($(this).val() == '') {
+                         empty = true;
+                     }
+                 });
+
+                 if (empty) {
+                     alert("Please fill empty fields.");
+                 }
+                 else {
+
+            if($('#server_auth').is(":checked")){
+             console.log('server');
+             keyUsage = true;
+             digitalSignature = true;
+             keyEncipherment = true;
+             keyAgreement = true;
+             extendedKeyUsage = true;
+             serverAuth = true;
+            }
 	 if($('#client_auth').is(":checked")){
 		 console.log('client');
 		 keyUsage = true;
@@ -176,7 +145,7 @@ $(document).ready(function() {
                                    }
                             }
                    })
-
+        }
 
     	})
 })

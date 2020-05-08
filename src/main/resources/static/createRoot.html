@@ -60,19 +60,6 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.min.js"></script>
 
-    <!------ ovde je bila skripta ---------->
-    <script>
-        $("input[type='text']").on("keyup", function(){
-    if($(this).val() != "" ){
-        $("input[type='submit']").removeAttr("disabled");
-    } else {
-        $("input[type='submit']").attr("disabled", "disabled");
-    }
-});
-
-
-    </script>
-
    </head>
    <body>
 
@@ -148,7 +135,7 @@
                         </div>
 
                             <div class="md-form">
-                                <input type="text" id="alias" name="alias"  class="form-control" required onkeyup="if(this.textLength != 0) {btnCreate.disabled = false} else {btnCreate.disabled = true}">
+                                <input type="text" id="alias" name="alias"  class="form-control" required >
                                 <label for="alias">Alias</label>
                                 <span class="error">This field is required</span>
                                 <span class="error_form" id="alias_error_message"></span>
@@ -197,7 +184,7 @@
                         <div class="md-form ">
 
                                 <div class="text-center actions">
-                                    <button class="btn btn-default waves-effect waves-light" id="btnCreate" type="submit"  disabled="disabled">Create and sign</button>
+                                    <button class="btn btn-default waves-effect waves-light" id="btnCreate" type="submit" >Create and sign</button>
                                 </div>
                             <div>
                             </div>
