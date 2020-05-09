@@ -6,6 +6,20 @@ window.onload = function () {
 
     $('#btnNext').click(function(e){
         e.preventDefault()
+
+        // valid
+            var empty = false;
+                    $('#forma1 input').each(function() {
+                        if ($(this).val() == '') {
+                            empty = true;
+                        }
+                    });
+
+                    if (empty) {
+                        alert("Please fill empty fields.");
+                    }
+                    else {
+
         $('#btnNext').hide()
         $('#afterNext').show()
         $('#issuerCA').prop('disabled', true)
@@ -50,7 +64,8 @@ window.onload = function () {
                 }
             }
 
-        })
+        })    // ajax
+        }     // else deo
     })
 
 
